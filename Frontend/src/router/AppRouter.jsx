@@ -27,8 +27,17 @@ import EntregaChecklistPage from "../pages/entregas/EntregaChecklistPage";
 import GestoriaPage from "../pages/gestoria/GestoriaPage";
 
 import LibroDiarioPage from "../pages/contabilidad/libro-diario";
+import EstadosCuentaPage from "../pages/contabilidad/EstadosCuentaPage";
+import EstadosCuentaClientesPage from "../pages/contabilidad/EstadosCuentaClientes";
+import EstadosCuentaProveedoresPage from "../pages/contabilidad/EstadosCuentaProveedores";
+import ChequesPage from "../pages/contabilidad/ChequesPage";
+import GastosFijosPage from "../pages/contabilidad/GastosFijosPage";
 
 import DashboardPage from "../pages/dashboard/dashboardPage";
+
+import ComprasPage from "../pages/compras/ComprasPage";
+import NuevaCompraPage from "../pages/compras/NuevaCompraPage";
+import BusquedasPage from "../pages/compras/BusquedasPage";
 
 export default function AppRouter() {
   return (
@@ -36,6 +45,8 @@ export default function AppRouter() {
       <AppLayout>
         <Routes>
           <Route path="/" element={<Navigate to="/clientes" />} />
+
+          <Route path="/dashboard" element={<DashboardPage />} />
 
           <Route path="/clientes" element={<ClientesPage />} />
           <Route path="/clientes/nuevo" element={<NuevoClientePage />} />
@@ -46,6 +57,10 @@ export default function AppRouter() {
           <Route path="/ventas" element={<VentasPage />} />
           <Route path="/ventas/nueva" element={<NuevaVentaPage />} />
           <Route path="/ventas/:id/boleto" element={<BoletoVentaPage />} />
+
+          <Route path="/compras" element={<ComprasPage />} />
+          <Route path="/compras/nueva" element={<NuevaCompraPage />} />
+          <Route path="/busquedas" element={<BusquedasPage />} />
 
           <Route path="/ficha-tecnica" element={<FichaTecnicaPage />} />
           <Route
@@ -59,27 +74,51 @@ export default function AppRouter() {
             element={<OrdenTrabajoDetallePage />}
           />
 
+          <Route path="/gestoria" element={<GestoriaPage />} />
+
+          <Route path="/entregas" element={<TurnosEntregasPage />} />
+          <Route path="/entregas/:id" element={<EntregaChecklistPage />} />
+
+          <Route
+            path="/contabilidad/libro-diario"
+            element={<LibroDiarioPage />}
+          />
+
           <Route
             path="/contabilidad/proveedores"
             element={<ProveedoresPage />}
           />
+
           <Route
             path="/contabilidad/proveedores/movimientos/:operacionId"
             element={<ProveedorMovimientosPage />}
           />
+
           <Route
             path="/contabilidad/proveedores/:id"
             element={<ProveedorDetallePage />}
           />
 
-          <Route path="/entregas" element={<TurnosEntregasPage />} />
-          <Route path="/entregas/:id" element={<EntregaChecklistPage />} />
+          <Route
+            path="/contabilidad/estados-cuenta"
+            element={<EstadosCuentaPage />}
+          />
 
-          <Route path="/gestoria" element={<GestoriaPage />} />
+          <Route
+            path="/contabilidad/estados-cuenta/clientes"
+            element={<EstadosCuentaClientesPage />}
+          />
 
-          <Route path="/contabilidad/libro-diario" element={<LibroDiarioPage />} />
+          <Route
+            path="/contabilidad/estados-cuenta/proveedores"
+            element={<EstadosCuentaProveedoresPage />}
+          />
 
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/contabilidad/cheques" element={<ChequesPage />} />
+          <Route
+  path="/contabilidad/gastos-fijos"
+  element={<GastosFijosPage />}
+/>
         </Routes>
       </AppLayout>
     </BrowserRouter>

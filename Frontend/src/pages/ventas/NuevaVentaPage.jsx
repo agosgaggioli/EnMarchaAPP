@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -8,6 +8,7 @@ import {
   User,
   Plus,
   Search,
+  Trash2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -17,6 +18,14 @@ export default function NuevaVentaPage() {
   const [clienteSeleccionado, setClienteSeleccionado] = useState("");
   const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState("");
   const [metodosPago, setMetodosPago] = useState([]);
+
+  const [plazoFinanciacion, setPlazoFinanciacion] = useState({
+    dias: "",
+    monto: "",
+    observacion: "",
+  });
+
+  const [plazosFinanciacion, setPlazosFinanciacion] = useState([]);
 
   const [vehiculoEntregado, setVehiculoEntregado] = useState({
     marca: "",
@@ -30,6 +39,40 @@ export default function NuevaVentaPage() {
     ubicacion: "A ingresar",
     observaciones: "",
   });
+
+  const totalFinanciado = useMemo(
+    () =>
+      plazosFinanciacion.reduce(
+        (acc, item) => acc + Number(item.monto || 0),
+        0
+      ),
+    [plazosFinanciacion]
+  );
+
+  const agregarPlazoFinanciacion = () => {
+    if (!plazoFinanciacion.dias || !plazoFinanciacion.monto) return;
+
+    const nuevoPlazo = {
+      id: `PLZ${Date.now()}`,
+      ...plazoFinanciacion,
+      dias: Number(plazoFinanciacion.dias),
+      monto: Number(plazoFinanciacion.monto),
+    };
+
+    setPlazosFinanciacion([...plazosFinanciacion, nuevoPlazo]);
+
+    setPlazoFinanciacion({
+      dias: "",
+      monto: "",
+      observacion: "",
+    });
+  };
+
+  const eliminarPlazoFinanciacion = (id) => {
+    setPlazosFinanciacion(
+      plazosFinanciacion.filter((item) => item.id !== id)
+    );
+  };
 
   const nextStep = () => {
     if (step === 1 && !tipoVenta) return;
@@ -235,22 +278,141 @@ export default function NuevaVentaPage() {
             </p>
 
             <div className="mb-6 grid gap-4 md:grid-cols-3">
-              {["Efectivo", "Transferencia", "Cheque", "Financiación", "Entrega vehículo usado"].map(
-                (metodo) => (
-                  <button
-                    key={metodo}
-                    onClick={() => toggleMetodoPago(metodo)}
-                    className={`rounded-2xl border p-4 text-left font-semibold transition ${
-                      metodosPago.includes(metodo)
-                        ? "border-[#26aa9c] bg-[#26aa9c]/10 text-[#1a3263]"
-                        : "border-[#acbac4]/60 text-[#357eb8] hover:border-[#357eb8]"
-                    }`}
-                  >
-                    {metodo}
-                  </button>
-                )
-              )}
+              {[
+                "Efectivo",
+                "Transferencia",
+                "Cheque",
+                "Financiación propia",
+                "Entrega vehículo usado",
+              ].map((metodo) => (
+                <button
+                  key={metodo}
+                  onClick={() => toggleMetodoPago(metodo)}
+                  className={`rounded-2xl border p-4 text-left font-semibold transition ${
+                    metodosPago.includes(metodo)
+                      ? "border-[#26aa9c] bg-[#26aa9c]/10 text-[#1a3263]"
+                      : "border-[#acbac4]/60 text-[#357eb8] hover:border-[#357eb8]"
+                  }`}
+                >
+                  {metodo}
+                </button>
+              ))}
             </div>
+
+            {metodosPago.includes("Financiación propia") && (
+              <div className="mb-6 rounded-2xl border border-[#26aa9c]/40 bg-[#26aa9c]/5 p-6">
+                <h3 className="mb-2 text-xl font-bold text-[#1a3263]">
+                  Financiación propia
+                </h3>
+
+                <p className="mb-5 text-[#357eb8]">
+                  Definí los pagos futuros indicando en cuántos días vence cada uno.
+                </p>
+
+                <div className="rounded-2xl border border-[#dbe4ee] bg-white p-5">
+                  <div className="grid gap-5 md:grid-cols-[0.7fr_1fr_1.5fr_auto]">
+                    <InputSimple
+                      label="Plazo en días"
+                      type="number"
+                      value={plazoFinanciacion.dias}
+                      onChange={(e) =>
+                        setPlazoFinanciacion({
+                          ...plazoFinanciacion,
+                          dias: e.target.value,
+                        })
+                      }
+                      placeholder="Ej: 30"
+                    />
+
+                    <InputSimple
+                      label="Monto"
+                      type="number"
+                      value={plazoFinanciacion.monto}
+                      onChange={(e) =>
+                        setPlazoFinanciacion({
+                          ...plazoFinanciacion,
+                          monto: e.target.value,
+                        })
+                      }
+                      placeholder="$ 0"
+                    />
+
+                    <InputSimple
+                      label="Observación"
+                      value={plazoFinanciacion.observacion}
+                      onChange={(e) =>
+                        setPlazoFinanciacion({
+                          ...plazoFinanciacion,
+                          observacion: e.target.value,
+                        })
+                      }
+                      placeholder="Ej: entrega, refuerzo, saldo final..."
+                    />
+
+                    <div className="flex items-end">
+                      <button
+                        type="button"
+                        onClick={agregarPlazoFinanciacion}
+                        className="h-12 rounded-xl bg-[#26aa9c] px-6 font-semibold text-white transition hover:bg-[#219b8f]"
+                      >
+                        Agregar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {plazosFinanciacion.length > 0 ? (
+                  <div className="mt-5 space-y-3">
+                    {plazosFinanciacion.map((plazo) => (
+                      <div
+                        key={plazo.id}
+                        className="flex items-center justify-between rounded-2xl border border-[#dbe4ee] bg-white px-5 py-4 shadow-sm"
+                      >
+                        <div>
+                          <span className="mb-1 inline-flex rounded-full bg-[#357eb8]/10 px-3 py-1 text-xs font-bold text-[#357eb8]">
+                            Vence en {plazo.dias} días
+                          </span>
+
+                          <p className="mt-2 text-lg font-bold text-[#1a3263]">
+                            {formatMoney(plazo.monto)}
+                          </p>
+
+                          <p className="text-sm text-[#357eb8]">
+                            {plazo.observacion || "Sin observaciones"}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => eliminarPlazoFinanciacion(plazo.id)}
+                          className="rounded-xl border border-red-200 p-2 text-red-600 transition hover:bg-red-50"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-5 rounded-2xl border border-dashed border-[#acbac4] bg-[#f8fafc] p-4 text-sm text-[#357eb8]">
+                    Todavía no hay plazos cargados.
+                  </div>
+                )}
+
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  <ResumenBox
+                    label="Total financiado"
+                    value={formatMoney(totalFinanciado)}
+                    tone="dark"
+                  />
+
+                  <ResumenBox
+                    label="Cantidad de plazos"
+                    value={plazosFinanciacion.length}
+                    tone="green"
+                  />
+                </div>
+              </div>
+            )}
 
             {metodosPago.includes("Entrega vehículo usado") && (
               <div className="rounded-2xl border border-[#acbac4]/50 bg-[#acbac4]/10 p-6">
@@ -372,16 +534,32 @@ function OptionCard({ selected, onClick, icon: Icon, title, description }) {
   );
 }
 
-function Input({ label, name, value, onChange, disabled = false }) {
+function Input({ label, name, value, onChange, disabled = false, type = "text" }) {
   return (
     <label className="block">
       <span className="mb-1 block font-medium text-[#1a3263]">{label}</span>
       <input
+        type={type}
         name={name}
         value={value}
         onChange={onChange}
         disabled={disabled}
         className="w-full rounded-xl border border-[#acbac4] bg-white px-4 py-3 text-[#1a3263] outline-none placeholder:text-[#acbac4] focus:border-[#357eb8] focus:ring-2 focus:ring-[#357eb8]/20 disabled:bg-[#acbac4]/15 disabled:text-[#1a3263]/60"
+      />
+    </label>
+  );
+}
+
+function InputSimple({ label, value, onChange, placeholder = "", type = "text" }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block font-medium text-[#1a3263]">{label}</span>
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="w-full rounded-xl border border-[#acbac4] bg-white px-4 py-3 text-[#1a3263] outline-none placeholder:text-[#acbac4] focus:border-[#357eb8] focus:ring-2 focus:ring-[#357eb8]/20"
       />
     </label>
   );
@@ -400,6 +578,29 @@ function TextArea({ label, name, value, onChange }) {
       />
     </label>
   );
+}
+
+function ResumenBox({ label, value, tone }) {
+  const styles = {
+    blue: "bg-[#357eb8]/10 text-[#357eb8]",
+    green: "bg-[#26aa9c]/10 text-[#168f82]",
+    dark: "bg-[#1a3263]/10 text-[#1a3263]",
+  };
+
+  return (
+    <div className={`rounded-2xl p-4 ${styles[tone]}`}>
+      <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
+      <p className="mt-1 text-lg font-extrabold">{value}</p>
+    </div>
+  );
+}
+
+function formatMoney(value) {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    maximumFractionDigits: 0,
+  }).format(Number(value || 0));
 }
 
 const clientes = [

@@ -36,7 +36,7 @@ const gastosIniciales = [
     concepto: "Sistema de gestión",
     importe: 580000,
     vencimiento: "2026-05-20",
-    estado: "Pendiente",
+    estado: "Pagado",
     observacion: "Licencia ERP",
   },
   {
@@ -67,11 +67,15 @@ export default function GastosFijosPage() {
   const registrosPorPagina = 6;
 
   const gastosFiltrados = gastos.filter((gasto) => {
-    const texto = `${gasto.concepto} ${gasto.observacion}`.toLowerCase();
+    const texto =
+      `${gasto.concepto} ${gasto.observacion} ${gasto.estado}`.toLowerCase();
+
     return texto.includes(busqueda.toLowerCase());
   });
 
-  const totalPaginas = Math.ceil(gastosFiltrados.length / registrosPorPagina);
+  const totalPaginas = Math.ceil(
+    gastosFiltrados.length / registrosPorPagina
+  );
 
   const gastosPaginados = gastosFiltrados.slice(
     (pagina - 1) * registrosPorPagina,
@@ -79,21 +83,31 @@ export default function GastosFijosPage() {
   );
 
   const metricas = useMemo(() => {
-    const total = gastos.reduce((acc, item) => acc + item.importe, 0);
+    const total = gastos.reduce(
+      (acc, item) => acc + item.importe,
+      0
+    );
+
+    const pagadoMes = gastos
+      .filter((item) => item.estado === "Pagado")
+      .reduce((acc, item) => acc + item.importe, 0);
+
+    const saldoPendiente = gastos
+      .filter((item) => item.estado === "Pendiente")
+      .reduce((acc, item) => acc + item.importe, 0);
 
     const conVencimiento = gastos.filter(
-      (item) => item.vencimiento && item.vencimiento !== "-"
-    ).length;
-
-    const sinVencimiento = gastos.filter(
-      (item) => !item.vencimiento || item.vencimiento === "-"
+      (item) =>
+        item.vencimiento &&
+        item.vencimiento !== "-"
     ).length;
 
     return {
       total,
+      pagadoMes,
+      saldoPendiente,
       cantidad: gastos.length,
       conVencimiento,
-      sinVencimiento,
     };
   }, [gastos]);
 
@@ -109,7 +123,10 @@ export default function GastosFijosPage() {
     setForm({
       concepto: gasto.concepto,
       importe: gasto.importe,
-      vencimiento: gasto.vencimiento === "-" ? "" : gasto.vencimiento,
+      vencimiento:
+        gasto.vencimiento === "-"
+          ? ""
+          : gasto.vencimiento,
       observacion: gasto.observacion || "",
     });
 
@@ -127,7 +144,8 @@ export default function GastosFijosPage() {
                 ...item,
                 concepto: form.concepto,
                 importe: Number(form.importe),
-                vencimiento: form.vencimiento || "-",
+                vencimiento:
+                  form.vencimiento || "-",
                 observacion: form.observacion,
               }
             : item
@@ -135,10 +153,13 @@ export default function GastosFijosPage() {
       );
     } else {
       const nuevo = {
-        id: `GF${Date.now().toString().slice(-5)}`,
+        id: `GF${Date.now()
+          .toString()
+          .slice(-5)}`,
         concepto: form.concepto,
         importe: Number(form.importe),
-        vencimiento: form.vencimiento || "-",
+        vencimiento:
+          form.vencimiento || "-",
         estado: "Pendiente",
         observacion: form.observacion,
       };
@@ -152,14 +173,18 @@ export default function GastosFijosPage() {
   };
 
   const eliminarGasto = (id) => {
-    setGastos((prev) => prev.filter((item) => item.id !== id));
+    setGastos((prev) =>
+      prev.filter((item) => item.id !== id)
+    );
   };
 
   return (
     <section className="w-full">
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[#1a3263]">Gastos fijos</h1>
+          <h1 className="text-3xl font-bold text-[#1a3263]">
+            Gastos fijos
+          </h1>
 
           <p className="text-[#357eb8]">
             Cargá y administrá los gastos recurrentes de la empresa.
@@ -175,11 +200,25 @@ export default function GastosFijosPage() {
         </button>
       </div>
 
-      <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-4">
+      <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-5">
         <MetricCard
           title="Total estimado"
           value={formatMoney(metricas.total)}
           icon={Wallet}
+        />
+
+        <MetricCard
+          title="Pagado este mes"
+          value={formatMoney(metricas.pagadoMes)}
+          icon={CheckCircle}
+          highlight
+        />
+
+        <MetricCard
+          title="Saldo pendiente"
+          value={formatMoney(metricas.saldoPendiente)}
+          icon={AlertTriangle}
+          danger
         />
 
         <MetricCard
@@ -195,13 +234,6 @@ export default function GastosFijosPage() {
           icon={CalendarDays}
           warning
         />
-
-        <MetricCard
-          title="Sin vencimiento"
-          value={metricas.sinVencimiento}
-          icon={AlertTriangle}
-          danger
-        />
       </div>
 
       <div className="rounded-2xl border border-[#acbac4]/50 bg-white shadow-sm">
@@ -211,13 +243,18 @@ export default function GastosFijosPage() {
           </h2>
 
           <p className="text-sm text-[#357eb8]">
-            Visualizá los gastos cargados, sus importes y vencimientos.
+            Visualizá los gastos cargados,
+            sus importes, vencimientos y
+            estado de pago actualizado automáticamente.
           </p>
         </div>
 
         <div className="p-6">
           <div className="mb-5 flex items-center gap-2 rounded-xl border border-[#acbac4] bg-white px-4 py-3">
-            <Search size={20} className="text-[#357eb8]" />
+            <Search
+              size={20}
+              className="text-[#357eb8]"
+            />
 
             <input
               value={busqueda}
@@ -226,19 +263,22 @@ export default function GastosFijosPage() {
                 setPagina(1);
               }}
               className="w-full outline-none placeholder:text-[#acbac4]"
-              placeholder="Buscar gasto u observación..."
+              placeholder="Buscar gasto, observación o estado..."
             />
           </div>
 
           <div className="overflow-x-auto rounded-xl border border-[#acbac4]/60">
-            <table className="w-full min-w-[900px] text-left">
+            <table className="w-full min-w-[1000px] text-left">
               <thead className="bg-[#1a3263] text-white">
                 <tr>
                   <th className="p-4">Gasto</th>
                   <th className="p-4">Importe</th>
                   <th className="p-4">Vencimiento</th>
+                  <th className="p-4">Estado</th>
                   <th className="p-4">Observación</th>
-                  <th className="p-4 text-center">Acciones</th>
+                  <th className="p-4 text-center">
+                    Acciones
+                  </th>
                 </tr>
               </thead>
 
@@ -248,23 +288,38 @@ export default function GastosFijosPage() {
                     key={gasto.id}
                     className="border-t border-[#acbac4]/40 hover:bg-[#acbac4]/10"
                   >
-                    <td className="p-4 font-semibold">{gasto.concepto}</td>
+                    <td className="p-4 font-semibold">
+                      {gasto.concepto}
+                    </td>
 
                     <td className="p-4 font-bold text-[#26aa9c]">
                       {formatMoney(gasto.importe)}
                     </td>
 
                     <td className="p-4">
-                      {gasto.vencimiento && gasto.vencimiento !== "-" ? (
-                        <VencimientoBadge value={gasto.vencimiento} />
+                      {gasto.vencimiento &&
+                      gasto.vencimiento !== "-" ? (
+                        <VencimientoBadge
+                          value={gasto.vencimiento}
+                        />
                       ) : (
-                        <span className="text-sm text-[#acbac4]">Sin fecha</span>
+                        <span className="text-sm text-[#acbac4]">
+                          Sin fecha
+                        </span>
                       )}
                     </td>
 
                     <td className="p-4">
+                      <EstadoBadge
+                        estado={gasto.estado}
+                      />
+                    </td>
+
+                    <td className="p-4">
                       {gasto.observacion || (
-                        <span className="text-sm text-[#acbac4]">-</span>
+                        <span className="text-sm text-[#acbac4]">
+                          -
+                        </span>
                       )}
                     </td>
 
@@ -272,7 +327,9 @@ export default function GastosFijosPage() {
                       <div className="flex justify-center gap-2">
                         <IconButton
                           title="Editar"
-                          onClick={() => editarGasto(gasto)}
+                          onClick={() =>
+                            editarGasto(gasto)
+                          }
                         >
                           <Pencil size={16} />
                         </IconButton>
@@ -280,7 +337,9 @@ export default function GastosFijosPage() {
                         <IconButton
                           title="Eliminar"
                           danger
-                          onClick={() => eliminarGasto(gasto.id)}
+                          onClick={() =>
+                            eliminarGasto(gasto.id)
+                          }
                         >
                           <Trash2 size={16} />
                         </IconButton>
@@ -292,7 +351,7 @@ export default function GastosFijosPage() {
                 {gastosPaginados.length === 0 && (
                   <tr>
                     <td
-                      colSpan="5"
+                      colSpan="6"
                       className="p-6 text-center text-sm text-[#357eb8]"
                     >
                       No se encontraron gastos fijos.
@@ -305,26 +364,35 @@ export default function GastosFijosPage() {
 
           <div className="mt-5 flex items-center justify-between">
             <p className="text-sm text-[#357eb8]">
-              Mostrando {gastosPaginados.length} de {gastosFiltrados.length}{" "}
-              gastos
+              Mostrando{" "}
+              {gastosPaginados.length} de{" "}
+              {gastosFiltrados.length} gastos
             </p>
 
             <div className="flex items-center gap-2">
               <button
                 disabled={pagina === 1}
-                onClick={() => setPagina(pagina - 1)}
+                onClick={() =>
+                  setPagina(pagina - 1)
+                }
                 className="rounded-lg border border-[#acbac4] p-2 text-[#1a3263] disabled:opacity-40"
               >
                 <ChevronLeft size={18} />
               </button>
 
               <span className="text-sm font-bold text-[#1a3263]">
-                Página {pagina} de {totalPaginas || 1}
+                Página {pagina} de{" "}
+                {totalPaginas || 1}
               </span>
 
               <button
-                disabled={pagina === totalPaginas || totalPaginas === 0}
-                onClick={() => setPagina(pagina + 1)}
+                disabled={
+                  pagina === totalPaginas ||
+                  totalPaginas === 0
+                }
+                onClick={() =>
+                  setPagina(pagina + 1)
+                }
                 className="rounded-lg border border-[#acbac4] p-2 text-[#1a3263] disabled:opacity-40"
               >
                 <ChevronRight size={18} />
@@ -340,7 +408,9 @@ export default function GastosFijosPage() {
             <div className="mb-6 flex items-start justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-[#1a3263]">
-                  {gastoSeleccionado ? "Editar gasto fijo" : "Nuevo gasto fijo"}
+                  {gastoSeleccionado
+                    ? "Editar gasto fijo"
+                    : "Nuevo gasto fijo"}
                 </h2>
 
                 <p className="text-[#357eb8]">
@@ -349,10 +419,15 @@ export default function GastosFijosPage() {
               </div>
 
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() =>
+                  setShowModal(false)
+                }
                 className="rounded-full p-2 hover:bg-[#acbac4]/20"
               >
-                <X size={22} className="text-[#1a3263]" />
+                <X
+                  size={22}
+                  className="text-[#1a3263]"
+                />
               </button>
             </div>
 
@@ -360,15 +435,25 @@ export default function GastosFijosPage() {
               <Input
                 label="Gasto"
                 value={form.concepto}
-                onChange={(v) => setForm({ ...form, concepto: v })}
-                placeholder="Ej: Alquiler, luz, internet, seguro..."
+                onChange={(v) =>
+                  setForm({
+                    ...form,
+                    concepto: v,
+                  })
+                }
+                placeholder="Ej: Alquiler, luz, internet..."
               />
 
               <Input
                 label="Importe"
                 type="number"
                 value={form.importe}
-                onChange={(v) => setForm({ ...form, importe: v })}
+                onChange={(v) =>
+                  setForm({
+                    ...form,
+                    importe: v,
+                  })
+                }
                 placeholder="$ 0"
               />
 
@@ -376,7 +461,12 @@ export default function GastosFijosPage() {
                 label="Vencimiento"
                 type="date"
                 value={form.vencimiento}
-                onChange={(v) => setForm({ ...form, vencimiento: v })}
+                onChange={(v) =>
+                  setForm({
+                    ...form,
+                    vencimiento: v,
+                  })
+                }
               />
 
               <label className="block">
@@ -390,7 +480,8 @@ export default function GastosFijosPage() {
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      observacion: e.target.value,
+                      observacion:
+                        e.target.value,
                     })
                   }
                   className="input-base"
@@ -401,7 +492,9 @@ export default function GastosFijosPage() {
 
             <div className="mt-8 flex justify-end gap-3 border-t border-[#acbac4]/40 pt-6">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() =>
+                  setShowModal(false)
+                }
                 className="rounded-xl border border-[#acbac4] px-5 py-3 font-semibold text-[#1a3263]"
               >
                 Cancelar
@@ -431,12 +524,14 @@ function MetricCard({
 }) {
   return (
     <div className="rounded-2xl border border-[#acbac4]/40 bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-[#357eb8]">{title}</p>
+          <p className="text-sm text-[#357eb8]">
+            {title}
+          </p>
 
           <p
-            className={`mt-2 text-2xl font-bold ${
+            className={`mt-2 text-xl font-bold ${
               highlight
                 ? "text-[#26aa9c]"
                 : warning
@@ -458,6 +553,29 @@ function MetricCard({
   );
 }
 
+function EstadoBadge({ estado }) {
+  const pagado =
+    estado === "Pagado";
+
+  return (
+    <span
+      className={`inline-flex items-center gap-2 rounded-lg px-3 py-1 text-sm font-semibold ${
+        pagado
+          ? "bg-[#26aa9c]/15 text-[#1a3263]"
+          : "bg-red-50 text-red-600"
+      }`}
+    >
+      {pagado ? (
+        <CheckCircle size={15} />
+      ) : (
+        <AlertTriangle size={15} />
+      )}
+
+      {estado}
+    </span>
+  );
+}
+
 function VencimientoBadge({ value }) {
   return (
     <span className="inline-flex items-center gap-2 rounded-lg bg-[#357eb8]/15 px-3 py-1 text-sm font-semibold text-[#1a3263]">
@@ -467,7 +585,12 @@ function VencimientoBadge({ value }) {
   );
 }
 
-function IconButton({ children, title, onClick, danger }) {
+function IconButton({
+  children,
+  title,
+  onClick,
+  danger,
+}) {
   return (
     <button
       type="button"
@@ -484,15 +607,25 @@ function IconButton({ children, title, onClick, danger }) {
   );
 }
 
-function Input({ label, value, onChange, placeholder = "", type = "text" }) {
+function Input({
+  label,
+  value,
+  onChange,
+  placeholder = "",
+  type = "text",
+}) {
   return (
     <label className="block">
-      <span className="mb-1 block font-semibold text-[#1a3263]">{label}</span>
+      <span className="mb-1 block font-semibold text-[#1a3263]">
+        {label}
+      </span>
 
       <input
         type={type}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) =>
+          onChange(e.target.value)
+        }
         placeholder={placeholder}
         className="input-base"
       />
@@ -501,9 +634,12 @@ function Input({ label, value, onChange, placeholder = "", type = "text" }) {
 }
 
 function formatMoney(value) {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(value || 0);
+  return new Intl.NumberFormat(
+    "es-AR",
+    {
+      style: "currency",
+      currency: "ARS",
+      maximumFractionDigits: 0,
+    }
+  ).format(value || 0);
 }

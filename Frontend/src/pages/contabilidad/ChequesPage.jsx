@@ -5,14 +5,11 @@ import {
   X,
   ReceiptText,
   WalletCards,
-  AlertTriangle,
   CheckCircle,
-  Clock,
   ChevronLeft,
   ChevronRight,
   Plus,
   CalendarDays,
-  Building2,
 } from "lucide-react";
 
 const chequesIniciales = [
@@ -128,6 +125,8 @@ export default function ChequesPage() {
   const [busqueda, setBusqueda] = useState("");
   const [estadoFiltro, setEstadoFiltro] = useState("Todos");
   const [tipoFiltro, setTipoFiltro] = useState("Todos");
+  const [fechaDesde, setFechaDesde] = useState("");
+  const [fechaHasta, setFechaHasta] = useState("");
   const [chequeSeleccionado, setChequeSeleccionado] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [formCheque, setFormCheque] = useState(formInicial);
@@ -136,13 +135,33 @@ export default function ChequesPage() {
   const registrosPorPagina = 6;
 
   const chequesFiltrados = cheques.filter((cheque) => {
-    const texto = `${cheque.numero} ${cheque.emisor} ${cheque.cliente} ${cheque.banco} ${cheque.entregadoA}`.toLowerCase();
+    const texto =
+      `${cheque.numero} ${cheque.emisor} ${cheque.cliente} ${cheque.banco} ${cheque.entregadoA}`.toLowerCase();
 
     const coincideBusqueda = texto.includes(busqueda.toLowerCase());
-    const coincideEstado = estadoFiltro === "Todos" || cheque.estado === estadoFiltro;
+
+    const coincideEstado =
+      estadoFiltro === "Todos" || cheque.estado === estadoFiltro;
+
     const coincideTipo = tipoFiltro === "Todos" || cheque.banco === tipoFiltro;
 
-    return coincideBusqueda && coincideEstado && coincideTipo;
+    const fechaCheque = parseFecha(cheque.vencimiento);
+    const desde = fechaDesde ? parseFecha(fechaDesde) : null;
+    const hasta = fechaHasta ? parseFecha(fechaHasta) : null;
+
+    const coincideFechaDesde =
+      !desde || (fechaCheque && fechaCheque >= desde);
+
+    const coincideFechaHasta =
+      !hasta || (fechaCheque && fechaCheque <= hasta);
+
+    return (
+      coincideBusqueda &&
+      coincideEstado &&
+      coincideTipo &&
+      coincideFechaDesde &&
+      coincideFechaHasta
+    );
   });
 
   const totalPaginas = Math.ceil(chequesFiltrados.length / registrosPorPagina);
@@ -153,17 +172,56 @@ export default function ChequesPage() {
   );
 
   const metricas = useMemo(() => {
-    const total = cheques.reduce((acc, item) => acc + item.monto, 0);
-    const entregado = cheques
-      .filter((item) => item.estado === "Entregado")
-      .reduce((acc, item) => acc + item.montoEntregado, 0);
-    const cartera = cheques
-      .filter((item) => item.estado === "En cartera")
-      .reduce((acc, item) => acc + item.monto, 0);
-    const vencidos = cheques.filter((item) => item.estado === "Vencido").length;
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
 
-    return { total, entregado, cartera, vencidos };
+    const fecha15Dias = new Date(hoy);
+    fecha15Dias.setDate(fecha15Dias.getDate() + 15);
+
+    const fecha30Dias = new Date(hoy);
+    fecha30Dias.setDate(fecha30Dias.getDate() + 30);
+
+    const chequesActivos = cheques.filter((item) => item.estado !== "Entregado");
+
+    const totalCheques = cheques.reduce((acc, item) => acc + item.monto, 0);
+
+    const cheques15Dias = chequesActivos.filter((item) => {
+      const fecha = parseFecha(item.vencimiento);
+      return fecha && fecha <= fecha15Dias;
+    });
+
+    const cheques30Dias = chequesActivos.filter((item) => {
+      const fecha = parseFecha(item.vencimiento);
+      return fecha && fecha > fecha15Dias && fecha <= fecha30Dias;
+    });
+
+    const chequesMas30Dias = chequesActivos.filter((item) => {
+      const fecha = parseFecha(item.vencimiento);
+      return fecha && fecha > fecha30Dias;
+    });
+
+    return {
+      totalCheques,
+      total15Dias: cheques15Dias.reduce((acc, item) => acc + item.monto, 0),
+      total30Dias: cheques30Dias.reduce((acc, item) => acc + item.monto, 0),
+      totalMas30Dias: chequesMas30Dias.reduce(
+        (acc, item) => acc + item.monto,
+        0
+      ),
+      cantidad15Dias: cheques15Dias.length,
+      cantidad30Dias: cheques30Dias.length,
+      cantidadMas30Dias: chequesMas30Dias.length,
+    };
   }, [cheques]);
+
+  const limpiarFiltros = () => {
+    setBusqueda("");
+    setEstadoFiltro("Todos");
+    setTipoFiltro("Todos");
+    setFechaDesde("");
+    setFechaHasta("");
+    setPagina(1);
+  };
 
   const guardarCheque = () => {
     if (!formCheque.numero || !formCheque.emisor || !formCheque.monto) return;
@@ -195,8 +253,9 @@ export default function ChequesPage() {
           <h1 className="text-3xl font-bold text-[#1a3263]">
             Gestión de cheques
           </h1>
+
           <p className="text-[#357eb8]">
-            Reemplaza el Excel de cheques con búsqueda, filtros, vencimientos y seguimiento de cartera.
+            Controlá cheques por vencimiento para tomar decisiones comerciales.
           </p>
         </div>
 
@@ -210,79 +269,95 @@ export default function ChequesPage() {
       </div>
 
       <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-4">
-        <MetricCard title="Total cheques" value={formatMoney(metricas.total)} icon={ReceiptText} />
-        <MetricCard title="Entregados" value={formatMoney(metricas.entregado)} icon={CheckCircle} highlight />
-        <MetricCard title="En cartera" value={formatMoney(metricas.cartera)} icon={WalletCards} warning />
-        <MetricCard title="Vencidos" value={metricas.vencidos} icon={AlertTriangle} danger />
+        <MetricCard
+          title="Total cheques"
+          value={formatMoney(metricas.totalCheques)}
+          icon={ReceiptText}
+        />
+
+        <MetricCard
+          title="Total a 15 días"
+          value={formatMoney(metricas.total15Dias)}
+          subtitle={`${metricas.cantidad15Dias} cheques`}
+          icon={CheckCircle}
+          highlight
+        />
+
+        <MetricCard
+          title="Total a 30 días"
+          value={formatMoney(metricas.total30Dias)}
+          subtitle={`${metricas.cantidad30Dias} cheques`}
+          icon={CalendarDays}
+          warning
+        />
+
+        <MetricCard
+          title="Total a +30 días"
+          value={formatMoney(metricas.totalMas30Dias)}
+          subtitle={`${metricas.cantidadMas30Dias} cheques`}
+          icon={WalletCards}
+          danger
+        />
       </div>
 
-      <div className="mb-6 grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-2xl border border-[#acbac4]/50 bg-white p-6 shadow-sm">
-          <div className="mb-5 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#357eb8]/15 text-[#1a3263]">
-              <CalendarDays size={22} />
-            </div>
-            <div>
-              <h2 className="font-bold text-[#1a3263]">Próximos vencimientos</h2>
-              <p className="text-sm text-[#357eb8]">Valores que requieren seguimiento.</p>
-            </div>
+      <div className="mb-6 rounded-2xl border border-[#acbac4]/50 bg-white p-6 shadow-sm">
+        <div className="mb-5 flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#357eb8]/15 text-[#1a3263]">
+            <CalendarDays size={22} />
           </div>
 
-          <div className="grid gap-3 md:grid-cols-3">
-            {cheques
-              .filter((cheque) => cheque.estado !== "Entregado")
-              .slice(0, 3)
-              .map((cheque) => (
-                <div key={cheque.id} className="rounded-xl border border-[#acbac4]/50 bg-[#f8fafc] p-4">
-                  <p className="text-xs font-bold uppercase text-[#357eb8]">
-                    Vence {cheque.vencimiento}
-                  </p>
-                  <p className="mt-1 font-bold text-[#1a3263]">{cheque.emisor}</p>
-                  <p className="text-sm text-[#357eb8]">{cheque.numero}</p>
-                  <p className="mt-3 text-lg font-bold text-[#26aa9c]">
-                    {formatMoney(cheque.monto)}
-                  </p>
-                </div>
-              ))}
+          <div>
+            <h2 className="font-bold text-[#1a3263]">Próximos vencimientos</h2>
+            <p className="text-sm text-[#357eb8]">
+              Valores que requieren seguimiento.
+            </p>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#acbac4]/50 bg-white p-6 shadow-sm">
-          <div className="mb-5 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#26aa9c]/15 text-[#1b7f75]">
-              <Building2 size={22} />
-            </div>
-            <div>
-              <h2 className="font-bold text-[#1a3263]">Destino frecuente</h2>
-              <p className="text-sm text-[#357eb8]">A quién se entregan o aplican los cheques.</p>
-            </div>
-          </div>
+        <div className="grid gap-3 md:grid-cols-3">
+          {cheques
+            .filter((cheque) => cheque.estado !== "Entregado")
+            .slice(0, 3)
+            .map((cheque) => (
+              <div
+                key={cheque.id}
+                className="rounded-xl border border-[#acbac4]/50 bg-[#f8fafc] p-4"
+              >
+                <p className="text-xs font-bold uppercase text-[#357eb8]">
+                  Vence {cheque.vencimiento}
+                </p>
 
-          <div className="space-y-3">
-            {["Maipú - Raptor", "Zento", "Giorgi - Boiero"].map((destino) => (
-              <div key={destino} className="flex items-center justify-between rounded-xl bg-[#f8fafc] px-4 py-3">
-                <span className="font-semibold text-[#1a3263]">{destino}</span>
-                <span className="rounded-lg bg-[#acbac4]/20 px-3 py-1 text-sm font-bold text-[#357eb8]">
-                  {cheques.filter((c) => c.entregadoA.toLowerCase().includes(destino.toLowerCase())).length} cheques
-                </span>
+                <p className="mt-1 font-bold text-[#1a3263]">
+                  {cheque.emisor}
+                </p>
+
+                <p className="text-sm text-[#357eb8]">{cheque.numero}</p>
+
+                <p className="mt-3 text-lg font-bold text-[#26aa9c]">
+                  {formatMoney(cheque.monto)}
+                </p>
               </div>
             ))}
-          </div>
         </div>
       </div>
 
       <div className="rounded-2xl border border-[#acbac4]/50 bg-white shadow-sm">
         <div className="border-b border-[#acbac4]/40 p-6">
-          <h2 className="text-xl font-bold text-[#1a3263]">Listado de cheques</h2>
+          <h2 className="text-xl font-bold text-[#1a3263]">
+            Listado de cheques
+          </h2>
+
           <p className="text-sm text-[#357eb8]">
-            Control de número, emisor, cliente, vencimiento, monto, entrega y saldo en cartera.
+            Control de número, emisor, cliente, vencimiento, monto, entrega y
+            saldo en cartera.
           </p>
         </div>
 
         <div className="p-6">
-          <div className="mb-5 grid gap-4 xl:grid-cols-[1fr_180px_180px]">
+          <div className="mb-5 grid gap-4 xl:grid-cols-[1fr_170px_170px_170px_170px_auto]">
             <div className="flex items-center gap-2 rounded-xl border border-[#acbac4] bg-white px-4 py-3">
               <Search size={20} className="text-[#357eb8]" />
+
               <input
                 value={busqueda}
                 onChange={(e) => {
@@ -320,6 +395,35 @@ export default function ChequesPage() {
               <option>Entregado</option>
               <option>Vencido</option>
             </select>
+
+            <input
+              type="date"
+              value={fechaDesde}
+              onChange={(e) => {
+                setFechaDesde(e.target.value);
+                setPagina(1);
+              }}
+              className="rounded-xl border border-[#acbac4] bg-white px-4 py-3 text-[#1a3263] outline-none"
+              title="Fecha desde"
+            />
+
+            <input
+              type="date"
+              value={fechaHasta}
+              onChange={(e) => {
+                setFechaHasta(e.target.value);
+                setPagina(1);
+              }}
+              className="rounded-xl border border-[#acbac4] bg-white px-4 py-3 text-[#1a3263] outline-none"
+              title="Fecha hasta"
+            />
+
+            <button
+              onClick={limpiarFiltros}
+              className="rounded-xl border border-[#357eb8] px-4 py-3 font-semibold text-[#357eb8] hover:bg-[#357eb8]/10"
+            >
+              Limpiar
+            </button>
           </div>
 
           <div className="overflow-x-auto rounded-xl border border-[#acbac4]/60">
@@ -340,35 +444,61 @@ export default function ChequesPage() {
 
               <tbody className="text-[#1a3263]">
                 {chequesPaginados.map((cheque) => (
-                  <tr key={cheque.id} className="border-t border-[#acbac4]/40 hover:bg-[#acbac4]/10">
+                  <tr
+                    key={cheque.id}
+                    className="border-t border-[#acbac4]/40 hover:bg-[#acbac4]/10"
+                  >
                     <td className="p-4 font-bold">{cheque.numero}</td>
                     <td className="p-4 font-semibold">{cheque.emisor}</td>
                     <td className="p-4">{cheque.cliente}</td>
+
                     <td className="p-4">
                       <TipoBadge tipo={cheque.banco} />
                     </td>
+
                     <td className="p-4">{cheque.vencimiento}</td>
-                    <td className="p-4 font-bold text-[#26aa9c]">{formatMoney(cheque.monto)}</td>
+
+                    <td className="p-4 font-bold text-[#26aa9c]">
+                      {formatMoney(cheque.monto)}
+                    </td>
+
                     <td className="p-4">{cheque.entregadoA || "-"}</td>
+
                     <td className="p-4">
                       <EstadoBadge estado={cheque.estado} />
                     </td>
+
                     <td className="p-4">
                       <div className="flex justify-center">
-                        <IconButton title="Ver cheque" onClick={() => setChequeSeleccionado(cheque)}>
+                        <IconButton
+                          title="Ver cheque"
+                          onClick={() => setChequeSeleccionado(cheque)}
+                        >
                           <Eye size={18} />
                         </IconButton>
                       </div>
                     </td>
                   </tr>
                 ))}
+
+                {chequesPaginados.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan="9"
+                      className="p-6 text-center text-sm text-[#357eb8]"
+                    >
+                      No se encontraron cheques.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-[#357eb8]">
-              Mostrando {chequesPaginados.length} de {chequesFiltrados.length} cheques
+              Mostrando {chequesPaginados.length} de {chequesFiltrados.length}{" "}
+              cheques
             </p>
 
             <div className="flex items-center gap-2">
@@ -401,13 +531,20 @@ export default function ChequesPage() {
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-7 shadow-xl">
             <div className="mb-6 flex items-start justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-[#1a3263]">Detalle del cheque</h2>
+                <h2 className="text-2xl font-bold text-[#1a3263]">
+                  Detalle del cheque
+                </h2>
+
                 <p className="text-[#357eb8]">
-                  N° {chequeSeleccionado.numero} · {formatMoney(chequeSeleccionado.monto)}
+                  N° {chequeSeleccionado.numero} ·{" "}
+                  {formatMoney(chequeSeleccionado.monto)}
                 </p>
               </div>
 
-              <button onClick={() => setChequeSeleccionado(null)} className="rounded-full p-2 hover:bg-[#acbac4]/20">
+              <button
+                onClick={() => setChequeSeleccionado(null)}
+                className="rounded-full p-2 hover:bg-[#acbac4]/20"
+              >
                 <X size={22} className="text-[#1a3263]" />
               </button>
             </div>
@@ -417,6 +554,7 @@ export default function ChequesPage() {
                 <p className="text-sm text-[#357eb8]">Estado actual</p>
                 <EstadoBadge estado={chequeSeleccionado.estado} />
               </div>
+
               <div className="text-right">
                 <p className="text-sm text-[#357eb8]">Monto</p>
                 <p className="text-xl font-bold text-[#26aa9c]">
@@ -426,16 +564,34 @@ export default function ChequesPage() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <DatoSimple label="Fecha ingreso" value={chequeSeleccionado.fechaIngreso} />
+              <DatoSimple
+                label="Fecha ingreso"
+                value={chequeSeleccionado.fechaIngreso}
+              />
               <DatoSimple label="N° cheque" value={chequeSeleccionado.numero} />
               <DatoSimple label="Emisor" value={chequeSeleccionado.emisor} />
               <DatoSimple label="Cliente" value={chequeSeleccionado.cliente} />
               <DatoSimple label="Tipo" value={chequeSeleccionado.banco} />
-              <DatoSimple label="Vencimiento" value={chequeSeleccionado.vencimiento} />
-              <DatoSimple label="Monto entregado" value={formatMoney(chequeSeleccionado.montoEntregado)} />
-              <DatoSimple label="Entregado a" value={chequeSeleccionado.entregadoA || "-"} />
-              <DatoSimple label="Fecha entregado" value={chequeSeleccionado.fechaEntregado || "-"} />
-              <DatoSimple label="Observación" value={chequeSeleccionado.observacion || "-"} />
+              <DatoSimple
+                label="Vencimiento"
+                value={chequeSeleccionado.vencimiento}
+              />
+              <DatoSimple
+                label="Monto entregado"
+                value={formatMoney(chequeSeleccionado.montoEntregado)}
+              />
+              <DatoSimple
+                label="Entregado a"
+                value={chequeSeleccionado.entregadoA || "-"}
+              />
+              <DatoSimple
+                label="Fecha entregado"
+                value={chequeSeleccionado.fechaEntregado || "-"}
+              />
+              <DatoSimple
+                label="Observación"
+                value={chequeSeleccionado.observacion || "-"}
+              />
             </div>
 
             <div className="mt-7 flex justify-end border-t border-[#acbac4]/40 pt-5">
@@ -455,26 +611,61 @@ export default function ChequesPage() {
           <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white p-8 shadow-xl">
             <div className="mb-6 flex items-start justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-[#1a3263]">Nuevo cheque</h2>
-                <p className="text-[#357eb8]">Cargá los datos principales del valor.</p>
+                <h2 className="text-2xl font-bold text-[#1a3263]">
+                  Nuevo cheque
+                </h2>
+
+                <p className="text-[#357eb8]">
+                  Cargá los datos principales del valor.
+                </p>
               </div>
 
-              <button onClick={() => setShowModal(false)} className="rounded-full p-2 hover:bg-[#acbac4]/20">
+              <button
+                onClick={() => setShowModal(false)}
+                className="rounded-full p-2 hover:bg-[#acbac4]/20"
+              >
                 <X size={22} className="text-[#1a3263]" />
               </button>
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
-              <Input label="Fecha ingreso" type="date" value={formCheque.fechaIngreso} onChange={(v) => setFormCheque({ ...formCheque, fechaIngreso: v })} />
-              <Input label="N° cheque" value={formCheque.numero} onChange={(v) => setFormCheque({ ...formCheque, numero: v })} />
-              <Input label="Emisor" value={formCheque.emisor} onChange={(v) => setFormCheque({ ...formCheque, emisor: v })} />
-              <Input label="Cliente" value={formCheque.cliente} onChange={(v) => setFormCheque({ ...formCheque, cliente: v })} />
+              <Input
+                label="Fecha ingreso"
+                type="date"
+                value={formCheque.fechaIngreso}
+                onChange={(v) =>
+                  setFormCheque({ ...formCheque, fechaIngreso: v })
+                }
+              />
+
+              <Input
+                label="N° cheque"
+                value={formCheque.numero}
+                onChange={(v) => setFormCheque({ ...formCheque, numero: v })}
+              />
+
+              <Input
+                label="Emisor"
+                value={formCheque.emisor}
+                onChange={(v) => setFormCheque({ ...formCheque, emisor: v })}
+              />
+
+              <Input
+                label="Cliente"
+                value={formCheque.cliente}
+                onChange={(v) => setFormCheque({ ...formCheque, cliente: v })}
+              />
 
               <label className="block">
-                <span className="mb-1 block font-semibold text-[#1a3263]">Tipo</span>
+                <span className="mb-1 block font-semibold text-[#1a3263]">
+                  Tipo
+                </span>
+
                 <select
                   value={formCheque.banco}
-                  onChange={(e) => setFormCheque({ ...formCheque, banco: e.target.value })}
+                  onChange={(e) =>
+                    setFormCheque({ ...formCheque, banco: e.target.value })
+                  }
                   className="input-base"
                 >
                   <option>Físico</option>
@@ -482,17 +673,58 @@ export default function ChequesPage() {
                 </select>
               </label>
 
-              <Input label="Vencimiento" type="date" value={formCheque.vencimiento} onChange={(v) => setFormCheque({ ...formCheque, vencimiento: v })} />
-              <Input label="Monto" type="number" value={formCheque.monto} onChange={(v) => setFormCheque({ ...formCheque, monto: v })} />
-              <Input label="Monto entregado" type="number" value={formCheque.montoEntregado} onChange={(v) => setFormCheque({ ...formCheque, montoEntregado: v })} />
-              <Input label="Entregado a" value={formCheque.entregadoA} onChange={(v) => setFormCheque({ ...formCheque, entregadoA: v })} />
-              <Input label="Fecha entregado" type="date" value={formCheque.fechaEntregado} onChange={(v) => setFormCheque({ ...formCheque, fechaEntregado: v })} />
+              <Input
+                label="Vencimiento"
+                type="date"
+                value={formCheque.vencimiento}
+                onChange={(v) =>
+                  setFormCheque({ ...formCheque, vencimiento: v })
+                }
+              />
+
+              <Input
+                label="Monto"
+                type="number"
+                value={formCheque.monto}
+                onChange={(v) => setFormCheque({ ...formCheque, monto: v })}
+              />
+
+              <Input
+                label="Monto entregado"
+                type="number"
+                value={formCheque.montoEntregado}
+                onChange={(v) =>
+                  setFormCheque({ ...formCheque, montoEntregado: v })
+                }
+              />
+
+              <Input
+                label="Entregado a"
+                value={formCheque.entregadoA}
+                onChange={(v) =>
+                  setFormCheque({ ...formCheque, entregadoA: v })
+                }
+              />
+
+              <Input
+                label="Fecha entregado"
+                type="date"
+                value={formCheque.fechaEntregado}
+                onChange={(v) =>
+                  setFormCheque({ ...formCheque, fechaEntregado: v })
+                }
+              />
 
               <label className="block">
-                <span className="mb-1 block font-semibold text-[#1a3263]">Estado</span>
+                <span className="mb-1 block font-semibold text-[#1a3263]">
+                  Estado
+                </span>
+
                 <select
                   value={formCheque.estado}
-                  onChange={(e) => setFormCheque({ ...formCheque, estado: e.target.value })}
+                  onChange={(e) =>
+                    setFormCheque({ ...formCheque, estado: e.target.value })
+                  }
                   className="input-base"
                 >
                   <option>En cartera</option>
@@ -502,11 +734,19 @@ export default function ChequesPage() {
               </label>
 
               <label className="block md:col-span-2">
-                <span className="mb-1 block font-semibold text-[#1a3263]">Observación</span>
+                <span className="mb-1 block font-semibold text-[#1a3263]">
+                  Observación
+                </span>
+
                 <textarea
                   rows="3"
                   value={formCheque.observacion}
-                  onChange={(e) => setFormCheque({ ...formCheque, observacion: e.target.value })}
+                  onChange={(e) =>
+                    setFormCheque({
+                      ...formCheque,
+                      observacion: e.target.value,
+                    })
+                  }
                   className="input-base"
                   placeholder="Ej: aplicado a compra, entregado a proveedor, pendiente de confirmar..."
                 />
@@ -535,12 +775,21 @@ export default function ChequesPage() {
   );
 }
 
-function MetricCard({ title, value, icon: Icon, highlight, warning, danger }) {
+function MetricCard({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  highlight,
+  warning,
+  danger,
+}) {
   return (
     <div className="rounded-2xl border border-[#acbac4]/40 bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-[#357eb8]">{title}</p>
+
           <p
             className={`mt-2 text-2xl font-bold ${
               highlight
@@ -554,6 +803,12 @@ function MetricCard({ title, value, icon: Icon, highlight, warning, danger }) {
           >
             {value}
           </p>
+
+          {subtitle && (
+            <p className="mt-1 text-sm font-medium text-[#357eb8]">
+              {subtitle}
+            </p>
+          )}
         </div>
 
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#acbac4]/25 text-[#1a3263]">
@@ -572,7 +827,11 @@ function EstadoBadge({ estado }) {
   };
 
   return (
-    <span className={`rounded-lg px-3 py-1 text-sm font-semibold ${styles[estado] || "bg-[#acbac4]/25 text-[#1a3263]"}`}>
+    <span
+      className={`rounded-lg px-3 py-1 text-sm font-semibold ${
+        styles[estado] || "bg-[#acbac4]/25 text-[#1a3263]"
+      }`}
+    >
       {estado}
     </span>
   );
@@ -585,7 +844,11 @@ function TipoBadge({ tipo }) {
   };
 
   return (
-    <span className={`rounded-lg px-3 py-1 text-sm font-semibold ${styles[tipo] || "bg-[#acbac4]/25 text-[#1a3263]"}`}>
+    <span
+      className={`rounded-lg px-3 py-1 text-sm font-semibold ${
+        styles[tipo] || "bg-[#acbac4]/25 text-[#1a3263]"
+      }`}
+    >
       {tipo}
     </span>
   );
@@ -613,7 +876,9 @@ function DatoSimple({ label, value }) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-xl bg-[#f8fafc] px-4 py-3">
       <span className="text-sm text-[#357eb8]">{label}</span>
-      <span className="text-right text-sm font-bold text-[#1a3263]">{value}</span>
+      <span className="text-right text-sm font-bold text-[#1a3263]">
+        {value}
+      </span>
     </div>
   );
 }
@@ -622,6 +887,7 @@ function Input({ label, value, onChange, placeholder = "", type = "text" }) {
   return (
     <label className="block">
       <span className="mb-1 block font-semibold text-[#1a3263]">{label}</span>
+
       <input
         type={type}
         value={value}
@@ -631,6 +897,21 @@ function Input({ label, value, onChange, placeholder = "", type = "text" }) {
       />
     </label>
   );
+}
+
+function parseFecha(value) {
+  if (!value) return null;
+
+  if (value.includes("/")) {
+    const [dia, mes, anio] = value.split("/");
+    const fecha = new Date(Number(anio), Number(mes) - 1, Number(dia));
+    fecha.setHours(0, 0, 0, 0);
+    return fecha;
+  }
+
+  const fecha = new Date(value);
+  fecha.setHours(0, 0, 0, 0);
+  return fecha;
 }
 
 function formatMoney(value) {

@@ -110,11 +110,6 @@ const contabilidadItems = [
     icon: BookOpen,
   },
   {
-    label: "Proveedores",
-    path: "/contabilidad/proveedores",
-    icon: Building2,
-  },
-  {
     label: "Cheques",
     path: "/contabilidad/cheques",
     icon: ReceiptText,

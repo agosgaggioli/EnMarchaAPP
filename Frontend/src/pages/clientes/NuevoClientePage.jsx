@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Check, User, Building2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  User,
+  Building2,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function NuevoClientePage() {
@@ -20,8 +28,24 @@ export default function NuevoClientePage() {
     representante: "",
   });
 
+  const [actividades, setActividades] = useState([""]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleActividadChange = (index, value) => {
+    const nuevas = [...actividades];
+    nuevas[index] = value;
+    setActividades(nuevas);
+  };
+
+  const agregarActividad = () => {
+    setActividades([...actividades, ""]);
+  };
+
+  const eliminarActividad = (index) => {
+    setActividades(actividades.filter((_, i) => i !== index));
   };
 
   const nextStep = () => {
@@ -34,7 +58,12 @@ export default function NuevoClientePage() {
   };
 
   const guardarCliente = () => {
-    console.log("Cliente guardado:", { tipoPersona, ...form });
+    console.log("Cliente guardado:", {
+      tipoPersona,
+      ...form,
+      actividades: actividades.filter(Boolean),
+    });
+
     alert("Cliente guardado correctamente");
   };
 
@@ -67,8 +96,9 @@ export default function NuevoClientePage() {
             <h2 className="mb-2 text-2xl font-semibold text-[#1a3263]">
               Tipo de persona
             </h2>
+
             <p className="mb-6 text-[#357eb8]">
-              Seleccioná si el cliente corresponde a una persona Humana o jurídica.
+              Seleccioná si el cliente corresponde a una persona humana o jurídica.
             </p>
 
             <div className="grid gap-5 md:grid-cols-2">
@@ -96,6 +126,7 @@ export default function NuevoClientePage() {
             <h2 className="mb-2 text-2xl font-semibold text-[#1a3263]">
               Datos principales
             </h2>
+
             <p className="mb-6 text-[#357eb8]">
               Los campos se adaptan según el tipo de persona seleccionado.
             </p>
@@ -107,6 +138,19 @@ export default function NuevoClientePage() {
                 <Input label="DNI" name="dni" value={form.dni} onChange={handleChange} />
                 <Input label="CUIT/CUIL" name="cuit" value={form.cuit} onChange={handleChange} />
                 <Input label="Fecha de nacimiento" name="fechaNacimiento" type="date" value={form.fechaNacimiento} onChange={handleChange} />
+
+                <Select
+                  label="Condición fiscal"
+                  name="condicionFiscal"
+                  value={form.condicionFiscal}
+                  onChange={handleChange}
+                  options={[
+                    "Responsable inscripto",
+                    "Consumidor final",
+                    "Monotributista",
+                  ]}
+                />
+
                 <Input label="Teléfono" name="telefono" value={form.telefono} onChange={handleChange} />
                 <Input label="Email" name="email" value={form.email} onChange={handleChange} />
                 <Input label="Domicilio" name="domicilio" value={form.domicilio} onChange={handleChange} />
@@ -117,13 +161,70 @@ export default function NuevoClientePage() {
               <div className="grid gap-5 md:grid-cols-2">
                 <Input label="Razón Social" name="razonSocial" value={form.razonSocial} onChange={handleChange} />
                 <Input label="CUIT" name="cuit" value={form.cuit} onChange={handleChange} />
-                <Input label="Condición fiscal" name="condicionFiscal" value={form.condicionFiscal} onChange={handleChange} />
+
+                <Select
+                  label="Condición fiscal"
+                  name="condicionFiscal"
+                  value={form.condicionFiscal}
+                  onChange={handleChange}
+                  options={[
+                    "Responsable inscripto",
+                    "Consumidor final",
+                    "Monotributista",
+                  ]}
+                />
+
                 <Input label="Representante / contacto principal" name="representante" value={form.representante} onChange={handleChange} />
                 <Input label="Teléfono" name="telefono" value={form.telefono} onChange={handleChange} />
                 <Input label="Email" name="email" value={form.email} onChange={handleChange} />
                 <Input label="Domicilio legal" name="domicilio" value={form.domicilio} onChange={handleChange} />
               </div>
             )}
+
+            <div className="mt-8 rounded-2xl border border-[#acbac4]/50 bg-[#f8fafc] p-5">
+              <h3 className="mb-2 text-lg font-semibold text-[#1a3263]">
+                Actividad o sector del cliente
+              </h3>
+
+              <p className="mb-4 text-sm text-[#357eb8]">
+                Podés cargar una o más actividades asociadas al cliente.
+              </p>
+
+              <div className="space-y-3">
+                {actividades.map((actividad, index) => (
+                  <div key={index} className="flex gap-3">
+                    <input
+                      type="text"
+                      value={actividad}
+                      onChange={(e) =>
+                        handleActividadChange(index, e.target.value)
+                      }
+                      className="w-full rounded-xl border border-[#acbac4] bg-white px-4 py-3 text-[#1a3263] outline-none focus:border-[#357eb8] focus:ring-2 focus:ring-[#357eb8]/20"
+                      placeholder="Ej: Agro, comercio, transporte, servicios..."
+                    />
+
+                    {actividades.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => eliminarActividad(index)}
+                        className="rounded-xl border border-red-200 px-4 text-red-500 hover:bg-red-50"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={agregarActividad}
+                className="mt-4 inline-flex items-center gap-2 rounded-xl border border-[#26aa9c] px-4 py-2 font-medium text-[#26aa9c] hover:bg-[#26aa9c]/10"
+              >
+                <Plus size={18} />
+                Agregar actividad
+              </button>
+            </div>
           </div>
         )}
 
@@ -132,12 +233,20 @@ export default function NuevoClientePage() {
             <h2 className="mb-2 text-2xl font-semibold text-[#1a3263]">
               Confirmación
             </h2>
+
             <p className="mb-6 text-[#357eb8]">
               Revisá los datos antes de guardar el cliente.
             </p>
 
             <div className="grid gap-4 rounded-xl border border-[#acbac4]/50 bg-[#acbac4]/10 p-5 md:grid-cols-2">
-              <Data label="Tipo" value={tipoPersona === "Humana" ? "Persona Humana" : "Persona Jurídica"} />
+              <Data
+                label="Tipo"
+                value={
+                  tipoPersona === "Humana"
+                    ? "Persona Humana"
+                    : "Persona Jurídica"
+                }
+              />
 
               {tipoPersona === "Humana" ? (
                 <>
@@ -153,6 +262,8 @@ export default function NuevoClientePage() {
                 </>
               )}
 
+              <Data label="Condición fiscal" value={form.condicionFiscal} />
+              <Data label="Actividades" value={actividades.filter(Boolean).join(", ")} />
               <Data label="Teléfono" value={form.telefono} />
               <Data label="Email" value={form.email} />
               <Data label="Domicilio" value={form.domicilio} />
@@ -211,6 +322,7 @@ function StepCard({ number, title, active, done }) {
         >
           {done ? "✓" : number}
         </span>
+
         <p className="font-medium text-[#1a3263]">{title}</p>
       </div>
     </div>
@@ -228,7 +340,9 @@ function PersonTypeButton({ selected, onClick, icon: Icon, title, description })
       }`}
     >
       <Icon className="mb-4 text-[#26aa9c]" size={32} />
+
       <h3 className="text-xl font-semibold text-[#1a3263]">{title}</h3>
+
       <p className="text-[#357eb8]">{description}</p>
     </button>
   );
@@ -238,13 +352,37 @@ function Input({ label, name, value, onChange, type = "text" }) {
   return (
     <label className="block">
       <span className="mb-1 block font-medium text-[#1a3263]">{label}</span>
+
       <input
         type={type}
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full rounded-xl border border-[#acbac4] bg-white px-4 py-3 text-[#1a3263] outline-none placeholder:text-[#acbac4] focus:border-[#357eb8] focus:ring-2 focus:ring-[#357eb8]/20"
+        className="w-full rounded-xl border border-[#acbac4] bg-white px-4 py-3 text-[#1a3263] outline-none focus:border-[#357eb8] focus:ring-2 focus:ring-[#357eb8]/20"
       />
+    </label>
+  );
+}
+
+function Select({ label, name, value, onChange, options }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block font-medium text-[#1a3263]">{label}</span>
+
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        className="w-full rounded-xl border border-[#acbac4] bg-white px-4 py-3 text-[#1a3263] outline-none focus:border-[#357eb8] focus:ring-2 focus:ring-[#357eb8]/20"
+      >
+        <option value="">Seleccionar</option>
+
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
     </label>
   );
 }

@@ -19,112 +19,60 @@ import {
   BarChart3,
   ReceiptText,
   Wallet,
+  BadgeDollarSign,
+  Store,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
 
 const menu = [
-  {
-    label: "Dashboard",
-    path: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Clientes",
-    path: "/clientes",
-    icon: Users,
-  },
-  {
-    label: "Gestoría",
-    path: "/gestoria",
-    icon: FileCheck,
-  },
+  { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+  { label: "Clientes", path: "/clientes", icon: Users },
 ];
 
 const vehiculosItems = [
-  {
-    label: "Inventario",
-    path: "/vehiculos",
-    icon: Car,
-  },
-  {
-    label: "Ficha Técnica",
-    path: "/ficha-tecnica",
-    icon: ClipboardList,
-  },
-  {
-    label: "Órdenes Trabajo",
-    path: "/ordenes-trabajo",
-    icon: Wrench,
-  },
+  { label: "Inventario", path: "/vehiculos", icon: Car },
+  { label: "Ficha Técnica", path: "/ficha-tecnica", icon: ClipboardList },
+  { label: "Órdenes Trabajo", path: "/ordenes-trabajo", icon: Wrench },
 ];
 
 const comprasItems = [
-  {
-    label: "Compras",
-    path: "/compras",
-    icon: ShoppingCart,
-  },
-  {
-    label: "Turnos búsqueda",
-    path: "/busquedas",
-    icon: Truck,
-  },
+  { label: "Compras", path: "/compras", icon: ShoppingCart },
+  { label: "Turnos búsqueda", path: "/busquedas", icon: Truck },
 ];
 
 const ventasItems = [
-  {
-    label: "Ventas",
-    path: "/ventas",
-    icon: ShoppingCart,
-  },
-  {
-    label: "Turnos entrega",
-    path: "/entregas",
-    icon: CalendarDays,
-  },
+  { label: "Ventas", path: "/ventas", icon: ShoppingCart },
+  { label: "Turnos entrega", path: "/entregas", icon: CalendarDays },
+];
+
+const gestoriaItems = [
+  { label: "Gestoría", path: "/gestoria", icon: FileCheck },
+  { label: "Caja", path: "/gestoria/caja", icon: BadgeDollarSign },
+];
+
+const tiendaItems = [
+  { label: "Tienda online", path: "/tienda", icon: Store },
 ];
 
 const estadosCuentaItems = [
-  {
-    label: "Dashboard",
-    path: "/contabilidad/estados-cuenta",
-    icon: BarChart3,
-  },
-  {
-    label: "Clientes",
-    path: "/contabilidad/estados-cuenta/clientes",
-    icon: Users,
-  },
-  {
-    label: "Proveedores",
-    path: "/contabilidad/estados-cuenta/proveedores",
-    icon: Building2,
-  },
+  { label: "Dashboard", path: "/contabilidad/estados-cuenta", icon: BarChart3 },
+  { label: "Clientes", path: "/contabilidad/estados-cuenta/clientes", icon: Users },
+  { label: "Proveedores", path: "/contabilidad/estados-cuenta/proveedores", icon: Building2 },
 ];
 
 const contabilidadItems = [
-  {
-    label: "Libro Diario",
-    path: "/contabilidad/libro-diario",
-    icon: BookOpen,
-  },
-  {
-    label: "Cheques",
-    path: "/contabilidad/cheques",
-    icon: ReceiptText,
-  },
-  {
-    label: "Gastos Fijos",
-    path: "/contabilidad/gastos-fijos",
-    icon: Wallet,
-  },
+  { label: "Libro Diario", path: "/contabilidad/libro-diario", icon: BookOpen },
+  { label: "Cheques", path: "/contabilidad/cheques", icon: ReceiptText },
+  { label: "Gastos Fijos", path: "/contabilidad/gastos-fijos", icon: Wallet },
 ];
 
 export default function Sidebar() {
   const [openVehiculos, setOpenVehiculos] = useState(true);
   const [openCompras, setOpenCompras] = useState(false);
   const [openVentas, setOpenVentas] = useState(false);
+  const [openGestoria, setOpenGestoria] = useState(false);
+  const [openTienda, setOpenTienda] = useState(false);
   const [openContabilidad, setOpenContabilidad] = useState(true);
   const [openEstadosCuenta, setOpenEstadosCuenta] = useState(true);
 
@@ -137,47 +85,27 @@ export default function Sidebar() {
 
         <div>
           <p className="font-bold">En Marcha</p>
-          <p className="text-xs text-[#acbac4]">
-            ERP Automotor
-          </p>
+          <p className="text-xs text-[#acbac4]">ERP Automotor</p>
         </div>
       </div>
 
       <nav className="space-y-2">
-        <NavList items={menu.slice(0, 2)} />
+        <NavList items={menu} />
 
-        <Dropdown
-          label="Vehículos"
-          icon={Car}
-          open={openVehiculos}
-          setOpen={setOpenVehiculos}
-          items={vehiculosItems}
-        />
+        <Dropdown label="Vehículos" icon={Car} open={openVehiculos} setOpen={setOpenVehiculos} items={vehiculosItems} />
 
-        <Dropdown
-          label="Compras"
-          icon={Truck}
-          open={openCompras}
-          setOpen={setOpenCompras}
-          items={comprasItems}
-        />
+        <Dropdown label="Compras" icon={Truck} open={openCompras} setOpen={setOpenCompras} items={comprasItems} />
 
-        <Dropdown
-          label="Ventas"
-          icon={ShoppingCart}
-          open={openVentas}
-          setOpen={setOpenVentas}
-          items={ventasItems}
-        />
+        <Dropdown label="Ventas" icon={ShoppingCart} open={openVentas} setOpen={setOpenVentas} items={ventasItems} />
 
-        <NavList items={menu.slice(2)} />
+        <Dropdown label="Gestoría" icon={FileCheck} open={openGestoria} setOpen={setOpenGestoria} items={gestoriaItems} />
+
+        <Dropdown label="Tienda" icon={Store} open={openTienda} setOpen={setOpenTienda} items={tiendaItems} />
 
         <div>
           <button
             type="button"
-            onClick={() =>
-              setOpenContabilidad(!openContabilidad)
-            }
+            onClick={() => setOpenContabilidad(!openContabilidad)}
             className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition ${
               openContabilidad
                 ? "bg-[#357eb8] text-white"
@@ -189,11 +117,7 @@ export default function Sidebar() {
               Contabilidad
             </span>
 
-            {openContabilidad ? (
-              <ChevronDown size={18} />
-            ) : (
-              <ChevronRight size={18} />
-            )}
+            {openContabilidad ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
           </button>
 
           {openContabilidad && (
@@ -222,9 +146,7 @@ export default function Sidebar() {
               <div>
                 <button
                   type="button"
-                  onClick={() =>
-                    setOpenEstadosCuenta(!openEstadosCuenta)
-                  }
+                  onClick={() => setOpenEstadosCuenta(!openEstadosCuenta)}
                   className={`flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-sm font-medium transition ${
                     openEstadosCuenta
                       ? "bg-[#357eb8]/40 text-white"
@@ -236,11 +158,7 @@ export default function Sidebar() {
                     Estados cuenta
                   </span>
 
-                  {openEstadosCuenta ? (
-                    <ChevronDown size={16} />
-                  ) : (
-                    <ChevronRight size={16} />
-                  )}
+                  {openEstadosCuenta ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 </button>
 
                 {openEstadosCuenta && (
@@ -317,13 +235,7 @@ function NavList({ items }) {
   );
 }
 
-function Dropdown({
-  label,
-  icon: Icon,
-  open,
-  setOpen,
-  items,
-}) {
+function Dropdown({ label, icon: Icon, open, setOpen, items }) {
   return (
     <div>
       <button
@@ -340,11 +252,7 @@ function Dropdown({
           {label}
         </span>
 
-        {open ? (
-          <ChevronDown size={18} />
-        ) : (
-          <ChevronRight size={18} />
-        )}
+        {open ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
       </button>
 
       {open && (

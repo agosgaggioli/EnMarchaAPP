@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 
+import TiendaOnlinePage from "../pages/tienda/tiendaOnlinePage";
+
 import ClientesPage from "../pages/clientes/ClientesPage";
 import NuevoClientePage from "../pages/clientes/NuevoClientePage";
 
@@ -25,6 +27,7 @@ import TurnosEntregasPage from "../pages/entregas/TurnosEntregasPage";
 import EntregaChecklistPage from "../pages/entregas/EntregaChecklistPage";
 
 import GestoriaPage from "../pages/gestoria/GestoriaPage";
+import CajaGestoriaPage from "../pages/gestoria/caja";
 
 import LibroDiarioPage from "../pages/contabilidad/libro-diario";
 import EstadosCuentaPage from "../pages/contabilidad/EstadosCuentaPage";
@@ -113,6 +116,12 @@ export default function AppRouter() {
             path="/contabilidad/estados-cuenta/proveedores"
             element={<EstadosCuentaProveedoresPage />}
           />
+<Route path="/tienda" element={<TiendaOnlinePage />} />
+
+          <Route
+  path="/gestoria/caja"
+  element={<CajaGestoriaPage />}
+/>
 
           <Route path="/contabilidad/cheques" element={<ChequesPage />} />
           <Route

@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 
-import TiendaOnlinePage from "../pages/tienda/tiendaOnlinePage";
+import TiendaOnlinePage from "../pages/Tienda/tiendaOnlinePage";
 
 import ClientesPage from "../pages/clientes/ClientesPage";
 import NuevoClientePage from "../pages/clientes/NuevoClientePage";

@@ -1,1085 +1,455 @@
 import { useMemo, useState } from "react";
 import {
-  FolderKanban,
   Search,
-  Clock3,
-  CheckCircle2,
-  Car,
-  User,
-  CalendarDays,
-  Building2,
-  Bell,
-  ClipboardCheck,
+  SlidersHorizontal,
+  Share2,
+  Trash2,
   X,
-  MessageSquareText,
-  Wallet,
-  Plus,
-  ReceiptText,
+  Send,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
-const tramitesIniciales = [
+const unidades = [
   {
-    id: "GST001",
-    venta: "VT250",
-    cliente: "Arreche Fernando Gabriel",
-    vehiculo: "Chevrolet Montana LTZ",
-    dominio: "Sin dominio",
-    tipoUnidad: "0KM",
-    tramite: "Inscripción 0KM",
-    estado: "Documentación pedida",
-    origenDocumentacion: "Agencia oficial",
-    gestora: "Nadia Conti",
-    fechaEstimada: "31/05/2026",
-    observacion:
-      "Se solicitó documentación a la agencia oficial para iniciar inscripción.",
-    gastos: [
-      {
-        id: "G001",
-        fecha: "27/05/2026",
-        concepto: "Formulario inscripción",
-        medioPago: "Efectivo",
-        importe: 18500,
-        observacion: "Compra de formulario inicial.",
-      },
-      {
-        id: "G002",
-        fecha: "27/05/2026",
-        concepto: "Impresiones documentación",
-        medioPago: "Efectivo",
-        importe: 4500,
-        observacion: "Impresión de papeles para legajo.",
-      },
+    id: 1,
+    marca: "BAIC",
+    modelo: "X55",
+    version: "X55 II",
+    anio: 2026,
+    tipo: "SUV",
+    color: "A consultar",
+    precio: 0,
+    imagen:
+      "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?q=80&w=1200",
+    imagenes: [
+      "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?q=80&w=1200",
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1200",
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200",
     ],
   },
   {
-    id: "GST002",
-    venta: "VT241",
-    cliente: "Marchisio Leandro Daniel",
-    vehiculo: "Volkswagen Saveiro",
-    dominio: "JZJ895",
-    tipoUnidad: "Usado",
-    tramite: "Transferencia",
-    estado: "En proceso",
-    origenDocumentacion: "Cliente / Recepción",
-    gestora: "Nadia Conti",
-    fechaEstimada: "29/05/2026",
-    observacion: "Documentación recibida para iniciar transferencia.",
-    gastos: [
-      {
-        id: "G003",
-        fecha: "26/05/2026",
-        concepto: "Verificación policial",
-        medioPago: "Transferencia",
-        importe: 42000,
-        observacion: "Pago asociado a transferencia.",
-      },
+    id: 2,
+    marca: "JEEP",
+    modelo: "Commander",
+    version: "1.3T 270",
+    anio: 2022,
+    tipo: "SUV",
+    color: "Negro",
+    precio: 0,
+    imagen:
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1200",
+    imagenes: [
+      "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1200",
+      "https://images.unsplash.com/photo-1605893477799-b99e3b8b93fe?q=80&w=1200",
     ],
   },
   {
-    id: "GST003",
-    venta: "VT248",
-    cliente: "Gómez Luciana",
-    vehiculo: "Fiat Cronos Precision",
-    dominio: "AG452KL",
-    tipoUnidad: "0KM",
-    tramite: "Inscripción 0KM",
-    estado: "Presentado",
-    origenDocumentacion: "Agencia oficial",
-    gestora: "Nadia Conti",
-    fechaEstimada: "04/06/2026",
-    observacion: "Trámite presentado en registro.",
-    gastos: [],
+    id: 3,
+    marca: "CITROEN",
+    modelo: "C4 Lounge",
+    version: "1.6 THP Shine AT6",
+    anio: 2019,
+    tipo: "Sedan 4 puertas",
+    color: "Rojo",
+    precio: 0,
+    imagen:
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1200",
+    imagenes: [
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1200",
+    ],
   },
-];
-
-const notificacionesIniciales = [
   {
-    id: "NOT001",
-    venta: "VT245",
-    cliente: "Cáseres Ariel Agustín",
-    vehiculo: "Toyota Hilux SRV",
-    dominio: "AF321RT",
-    tipoUnidad: "Usado entregado como parte de pago",
-    enviadaPor: "Recepción",
-    gestora: "Nadia Conti",
-    fecha: "27/05/2026",
-    estado: "Pendiente de revisión",
-    observacion:
-      "La recepcionista completó el checklist de la unidad usada entregada como parte de pago.",
-    checklist: [
-      { nombre: "Título del automotor", recibido: true, observacion: "" },
-      { nombre: "Cédula verde", recibido: true, observacion: "" },
-      {
-        nombre: "Cédula autorizado si posee",
-        recibido: false,
-        observacion: "No posee",
-      },
-      { nombre: "Libre deuda de patentes", recibido: true, observacion: "" },
-      {
-        nombre: "Chapas patente en buenas condiciones",
-        recibido: true,
-        observacion: "",
-      },
-      {
-        nombre: "Tarjeta amarilla GNC",
-        recibido: false,
-        observacion: "No corresponde",
-      },
-      {
-        nombre: "Ficha técnica GNC",
-        recibido: false,
-        observacion: "No corresponde",
-      },
-      { nombre: "VTV vigente", recibido: true, observacion: "" },
-      { nombre: "Grabado de autopartes", recibido: true, observacion: "" },
-      { nombre: "Manuales", recibido: true, observacion: "" },
-      { nombre: "Llave duplicado", recibido: true, observacion: "" },
-      { nombre: "Código estéreo", recibido: false, observacion: "Pendiente" },
-      { nombre: "Gato", recibido: true, observacion: "" },
-      { nombre: "Llave cruz", recibido: true, observacion: "" },
-      { nombre: "Llave de seguridad", recibido: true, observacion: "" },
-      { nombre: "CAT", recibido: true, observacion: "" },
-      { nombre: "Fotocopia DNI del titular", recibido: true, observacion: "" },
-      {
-        nombre: "Cancelación de prendas, si posee",
-        recibido: false,
-        observacion: "No posee",
-      },
+    id: 4,
+    marca: "FORD",
+    modelo: "Ranger",
+    version: "2.0 DC 4X4 XLT",
+    anio: 2026,
+    tipo: "Pickup",
+    color: "Gris",
+    precio: 0,
+    imagen:
+      "https://images.unsplash.com/photo-1605893477799-b99e3b8b93fe?q=80&w=1200",
+    imagenes: [
+      "https://images.unsplash.com/photo-1605893477799-b99e3b8b93fe?q=80&w=1200",
     ],
   },
 ];
 
-const estadosPorTipo = {
-  "0KM": [
-    "Documentación pedida",
-    "Documentación recibida",
-    "En proceso",
-    "Listo para inscribir",
-    "Presentado",
-    "Observado",
-    "Inscripto",
-  ],
-  Usado: [
-    "En proceso",
-    "Listo para transferir",
-    "Presentado",
-    "Observado",
-    "Transferido",
-  ],
-};
+const marcas = [
+  "Todas las marcas",
+  ...new Set(unidades.map((u) => u.marca)),
+];
+
+const tipos = [
+  "Sedan 5 puertas",
+  "Sedan 4 puertas",
+  "Pickup",
+  "Utilitario",
+  "SUV",
+  "Todo terreno",
+];
 
 const formatMoney = (value) =>
-  new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 0,
-  }).format(value);
+  value === 0
+    ? "$ 0"
+    : new Intl.NumberFormat("es-AR", {
+        style: "currency",
+        currency: "ARS",
+        maximumFractionDigits: 0,
+      }).format(value);
 
-export default function GestoriaPage() {
-  const [tramites, setTramites] = useState(tramitesIniciales);
-  const [notificaciones] = useState(notificacionesIniciales);
-  const [filtroTipo, setFiltroTipo] = useState("Todos");
+export default function TiendaOnlinePage() {
   const [busqueda, setBusqueda] = useState("");
+  const [marca, setMarca] = useState("Todas las marcas");
+  const [tipoSeleccionado, setTipoSeleccionado] = useState([]);
+  const [unidadSeleccionada, setUnidadSeleccionada] = useState(null);
 
-  const [notificacionSeleccionada, setNotificacionSeleccionada] =
-    useState(null);
+  const unidadesFiltradas = useMemo(() => {
+    return unidades.filter((unidad) => {
+      const coincideBusqueda =
+        `${unidad.marca} ${unidad.modelo} ${unidad.version} ${unidad.anio}`
+          .toLowerCase()
+          .includes(busqueda.toLowerCase());
 
-  const [tramiteGastos, setTramiteGastos] = useState(null);
+      const coincideMarca =
+        marca === "Todas las marcas" || unidad.marca === marca;
 
-  const [modalEstado, setModalEstado] = useState({
-    abierto: false,
-    tramite: null,
-    nuevoEstado: "",
-    observacion: "",
-  });
-
-  const tramitesFiltrados = useMemo(() => {
-    return tramites.filter((tramite) => {
       const coincideTipo =
-        filtroTipo === "Todos" || tramite.tipoUnidad === filtroTipo;
+        tipoSeleccionado.length === 0 ||
+        tipoSeleccionado.includes(unidad.tipo);
 
-      const texto =
-        `${tramite.venta} ${tramite.cliente} ${tramite.vehiculo} ${tramite.dominio} ${tramite.tramite} ${tramite.estado}`.toLowerCase();
-
-      return coincideTipo && texto.includes(busqueda.toLowerCase());
+      return coincideBusqueda && coincideMarca && coincideTipo;
     });
-  }, [tramites, filtroTipo, busqueda]);
+  }, [busqueda, marca, tipoSeleccionado]);
 
-  const abrirModalCambioEstado = (tramite, nuevoEstado) => {
-    setModalEstado({
-      abierto: true,
-      tramite,
-      nuevoEstado,
-      observacion: "",
-    });
-  };
-
-  const confirmarCambioEstado = () => {
-    const { tramite, nuevoEstado, observacion } = modalEstado;
-
-    setTramites((prev) =>
-      prev.map((item) =>
-        item.id === tramite.id
-          ? {
-              ...item,
-              estado: nuevoEstado,
-              observacion: observacion || item.observacion,
-            }
-          : item
-      )
-    );
-
-    setModalEstado({
-      abierto: false,
-      tramite: null,
-      nuevoEstado: "",
-      observacion: "",
-    });
-  };
-
-  const agregarGasto = (tramiteId, nuevoGasto) => {
-    setTramites((prev) =>
-      prev.map((tramite) =>
-        tramite.id === tramiteId
-          ? {
-              ...tramite,
-              gastos: [
-                ...tramite.gastos,
-                {
-                  ...nuevoGasto,
-                  id: `G${Date.now()}`,
-                },
-              ],
-            }
-          : tramite
-      )
-    );
-
-    setTramiteGastos((prev) =>
-      prev
-        ? {
-            ...prev,
-            gastos: [
-              ...prev.gastos,
-              {
-                ...nuevoGasto,
-                id: `G${Date.now()}`,
-              },
-            ],
-          }
-        : null
+  const toggleTipo = (tipo) => {
+    setTipoSeleccionado((prev) =>
+      prev.includes(tipo)
+        ? prev.filter((item) => item !== tipo)
+        : [...prev, tipo]
     );
   };
 
-  const total0km = tramites.filter((t) => t.tipoUnidad === "0KM").length;
-  const totalUsados = tramites.filter((t) => t.tipoUnidad === "Usado").length;
-
-  const pendientes = tramites.filter((t) =>
-    [
-      "Documentación pedida",
-      "Documentación recibida",
-      "En proceso",
-      "Presentado",
-    ].includes(t.estado)
-  ).length;
-
-  const finalizados = tramites.filter((t) =>
-    ["Inscripto", "Transferido"].includes(t.estado)
-  ).length;
-
-  const totalGastos = tramites.reduce(
-    (acc, tramite) =>
-      acc +
-      tramite.gastos.reduce((subtotal, gasto) => subtotal + gasto.importe, 0),
-    0
-  );
-
-  const totalEfectivo = tramites.reduce(
-    (acc, tramite) =>
-      acc +
-      tramite.gastos
-        .filter((gasto) => gasto.medioPago === "Efectivo")
-        .reduce((subtotal, gasto) => subtotal + gasto.importe, 0),
-    0
-  );
-
-  const totalTransferencia = tramites.reduce(
-    (acc, tramite) =>
-      acc +
-      tramite.gastos
-        .filter((gasto) => gasto.medioPago === "Transferencia")
-        .reduce((subtotal, gasto) => subtotal + gasto.importe, 0),
-    0
-  );
+  const limpiarFiltros = () => {
+    setBusqueda("");
+    setMarca("Todas las marcas");
+    setTipoSeleccionado([]);
+  };
 
   return (
-    <section className="w-full">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#1a3263]">
-          Gestión de Gestoría
-        </h1>
-
-        <p className="max-w-4xl text-[#357eb8]">
-          Seguimiento de documentación, inscripción de unidades 0KM,
-          transferencia de usados, caja propia de gestoría y revisión de
-          notificaciones recibidas desde recepción.
-        </p>
-      </div>
-
-      <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-4">
-        <MetricCard title="0KM a inscribir" value={total0km} icon={Building2} />
-        <MetricCard title="Usados a transferir" value={totalUsados} icon={Car} />
-        <MetricCard title="Pendientes" value={pendientes} icon={Clock3} warning />
-        <MetricCard
-          title="Finalizados"
-          value={finalizados}
-          icon={CheckCircle2}
-          highlight
-        />
-      </div>
-
-      <div className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-3">
-        <MetricCard
-          title="Gastos gestoría"
-          value={formatMoney(totalGastos)}
-          icon={Wallet}
-        />
-        <MetricCard
-          title="Pagado en efectivo"
-          value={formatMoney(totalEfectivo)}
-          icon={ReceiptText}
-          warning
-        />
-        <MetricCard
-          title="Pagado por transferencia"
-          value={formatMoney(totalTransferencia)}
-          icon={ReceiptText}
-          highlight
-        />
-      </div>
-
-      {notificaciones.length > 0 && (
-        <div className="mb-6 rounded-2xl border border-yellow-200 bg-yellow-50 p-5 shadow-sm">
-          <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-yellow-100 text-yellow-700">
-              <Bell size={22} />
+    <section className="min-h-screen bg-[#f4f7f8]">
+      <header className="sticky top-0 z-20 border-b border-[#acbac4]/30 bg-white/95 px-8 py-5 shadow-sm backdrop-blur">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1a3263] text-sm font-bold text-white shadow">
+              degrá
             </div>
 
             <div>
-              <h2 className="text-lg font-bold text-[#1a3263]">
-                Notificaciones para gestoría
-              </h2>
-
-              <p className="text-sm text-[#357eb8]">
-                Checklist de unidad usada completado por recepción y pendiente
-                de revisión.
-              </p>
+              <p className="font-semibold text-[#26aa9c]">Tienda online</p>
+              <h1 className="text-2xl font-bold text-[#1a3263]">
+                Unidades publicadas
+              </h1>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            {notificaciones.map((item) => (
-              <div
-                key={item.id}
-                className="rounded-xl border border-yellow-200 bg-white p-4"
-              >
-                <div className="mb-2 flex items-center gap-2">
-                  <ClipboardCheck size={18} className="text-yellow-700" />
-
-                  <p className="font-bold text-[#1a3263]">{item.vehiculo}</p>
-                </div>
-
-                <p className="text-sm text-[#357eb8]">
-                  Cliente: {item.cliente}
-                </p>
-
-                <p className="text-sm text-[#357eb8]">
-                  Venta: {item.venta} · Dominio: {item.dominio}
-                </p>
-
-                <p className="mt-1 text-sm text-[#6b7c93]">
-                  {item.observacion}
-                </p>
-
-                <button
-                  onClick={() => setNotificacionSeleccionada(item)}
-                  className="mt-4 rounded-xl bg-[#1a3263] px-4 py-2 text-sm font-semibold text-white hover:bg-[#16284f]"
-                >
-                  Ver checklist recibido
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="rounded-2xl border border-[#acbac4]/50 bg-white shadow-sm">
-        <div className="border-b border-[#acbac4]/40 p-6">
-          <h2 className="text-xl font-bold text-[#1a3263]">
-            Operaciones de gestoría
-          </h2>
-
-          <p className="text-sm text-[#357eb8]">
-            Estados relacionados a ventas: inscripción de 0KM, transferencia de
-            usados y gastos asociados a cada trámite.
-          </p>
-        </div>
-
-        <div className="p-6">
-          <div className="mb-5 flex flex-wrap items-center gap-3">
-            {["Todos", "0KM", "Usado"].map((tipo) => (
-              <button
-                key={tipo}
-                onClick={() => setFiltroTipo(tipo)}
-                className={`rounded-xl px-4 py-2 font-semibold transition ${
-                  filtroTipo === tipo
-                    ? "bg-[#1a3263] text-white"
-                    : "border border-[#acbac4] bg-white text-[#1a3263] hover:bg-[#acbac4]/15"
-                }`}
-              >
-                {tipo}
-              </button>
-            ))}
-
-            <div className="ml-auto flex min-w-[340px] flex-1 items-center gap-2 rounded-xl border border-[#acbac4] bg-white px-4 py-3">
+          <div className="flex flex-1 items-center justify-end gap-3">
+            <div className="flex w-full max-w-xl items-center gap-3 rounded-2xl border border-[#acbac4]/60 bg-[#f8fafc] px-5 py-3">
               <Search size={20} className="text-[#357eb8]" />
 
               <input
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
-                className="w-full outline-none placeholder:text-[#acbac4]"
-                placeholder="Buscar cliente, dominio, venta o trámite..."
+                placeholder="Buscar marca, modelo o versión"
+                className="w-full bg-transparent text-[#1a3263] outline-none placeholder:text-[#8a99ad]"
               />
+            </div>
+
+            <button className="inline-flex items-center gap-2 rounded-2xl border border-[#357eb8]/40 bg-white px-5 py-3 font-semibold text-[#357eb8] hover:bg-[#357eb8]/10">
+              <Share2 size={18} />
+              Compartir
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="grid grid-cols-1 gap-6 p-8 xl:grid-cols-[290px_1fr]">
+        <aside className="h-fit rounded-3xl border border-[#acbac4]/40 bg-white p-6 shadow-sm">
+          <div className="mb-5 flex items-center gap-2">
+            <SlidersHorizontal size={20} className="text-[#26aa9c]" />
+
+            <h2 className="text-xl font-bold text-[#1a3263]">
+              Filtrar unidades
+            </h2>
+          </div>
+
+          <div className="mb-5 border-t border-[#acbac4]/30 pt-5">
+            <label className="mb-2 block text-sm font-bold uppercase text-[#6b7c93]">
+              Marca
+            </label>
+
+            <select
+              value={marca}
+              onChange={(e) => setMarca(e.target.value)}
+              className="w-full rounded-xl border border-[#acbac4]/60 bg-white px-4 py-3 text-[#1a3263] outline-none focus:border-[#357eb8]"
+            >
+              {marcas.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-5">
+            <label className="mb-3 block text-sm font-bold uppercase text-[#6b7c93]">
+              Tipo de vehículo
+            </label>
+
+            <div className="space-y-3 rounded-xl border border-[#acbac4]/40 bg-[#f8fafc] p-3">
+              {tipos.map((tipo) => (
+                <label
+                  key={tipo}
+                  className="flex cursor-pointer items-center gap-3 text-sm font-semibold uppercase text-[#4b5563]"
+                >
+                  <input
+                    type="checkbox"
+                    checked={tipoSeleccionado.includes(tipo)}
+                    onChange={() => toggleTipo(tipo)}
+                    className="h-4 w-4"
+                  />
+                  {tipo}
+                </label>
+              ))}
             </div>
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-[#acbac4]/60">
-            <table className="w-full min-w-[1550px] text-left">
-              <thead className="bg-[#1a3263] text-white">
-                <tr>
-                  <th className="p-4">Venta</th>
-                  <th className="p-4">Cliente</th>
-                  <th className="p-4">Unidad</th>
-                  <th className="p-4">Tipo</th>
-                  <th className="p-4">Trámite</th>
-                  <th className="p-4">Origen documentación</th>
-                  <th className="p-4">Fecha estimada</th>
-                  <th className="p-4">Gestora</th>
-                  <th className="p-4">Estado</th>
-                  <th className="p-4">Gastos</th>
-                  <th className="p-4">Cambiar estado</th>
-                </tr>
-              </thead>
+          <button
+            onClick={limpiarFiltros}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-300 px-4 py-3 font-semibold text-red-600 hover:bg-red-50"
+          >
+            <Trash2 size={17} />
+            Limpiar filtros
+          </button>
+        </aside>
 
-              <tbody className="text-[#1a3263]">
-                {tramitesFiltrados.map((tramite) => {
-                  const totalGastoTramite = tramite.gastos.reduce(
-                    (acc, gasto) => acc + gasto.importe,
-                    0
-                  );
+        <section>
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-[#1a3263]">
+                Stock disponible
+              </h2>
 
-                  return (
-                    <tr
-                      key={tramite.id}
-                      className="border-t border-[#acbac4]/40 hover:bg-[#acbac4]/10"
-                    >
-                      <td className="p-4 font-bold">{tramite.venta}</td>
-
-                      <td className="p-4 font-semibold">{tramite.cliente}</td>
-
-                      <td className="p-4">
-                        <p className="font-semibold">{tramite.vehiculo}</p>
-
-                        <p className="text-sm text-[#357eb8]">
-                          {tramite.dominio}
-                        </p>
-
-                        <p className="mt-1 max-w-[320px] text-sm text-[#6b7c93]">
-                          {tramite.observacion}
-                        </p>
-                      </td>
-
-                      <td className="p-4">
-                        <TipoBadge tipo={tramite.tipoUnidad} />
-                      </td>
-
-                      <td className="p-4 font-medium">{tramite.tramite}</td>
-
-                      <td className="p-4">{tramite.origenDocumentacion}</td>
-
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <CalendarDays
-                            size={16}
-                            className="text-[#357eb8]"
-                          />
-                          {tramite.fechaEstimada}
-                        </div>
-                      </td>
-
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <User size={16} className="text-[#357eb8]" />
-                          {tramite.gestora}
-                        </div>
-                      </td>
-
-                      <td className="p-4">
-                        <EstadoBadge estado={tramite.estado} />
-                      </td>
-
-                      <td className="p-4">
-                        <button
-                          onClick={() => setTramiteGastos(tramite)}
-                          className="rounded-xl border border-[#26aa9c]/30 bg-[#26aa9c]/10 px-4 py-2 text-sm font-bold text-[#1b7f75] hover:bg-[#26aa9c]/20"
-                        >
-                          Gastos · {formatMoney(totalGastoTramite)}
-                        </button>
-                      </td>
-
-                      <td className="p-4">
-                        <select
-                          value={tramite.estado}
-                          onChange={(e) =>
-                            abrirModalCambioEstado(tramite, e.target.value)
-                          }
-                          className="rounded-xl border border-[#acbac4] bg-white px-4 py-2 text-[#1a3263] outline-none focus:border-[#357eb8] focus:ring-2 focus:ring-[#357eb8]/20"
-                        >
-                          {estadosPorTipo[tramite.tipoUnidad].map((estado) => (
-                            <option key={estado}>{estado}</option>
-                          ))}
-                        </select>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-
-            {tramitesFiltrados.length === 0 && (
-              <div className="p-8 text-center text-[#357eb8]">
-                No se encontraron operaciones para los filtros aplicados.
-              </div>
-            )}
+              <p className="text-sm text-[#357eb8]">
+                {unidadesFiltradas.length} unidades publicadas
+              </p>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {notificacionSeleccionada && (
-        <ChecklistModal
-          notificacion={notificacionSeleccionada}
-          onClose={() => setNotificacionSeleccionada(null)}
-        />
-      )}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 2xl:grid-cols-4">
+            {unidadesFiltradas.map((unidad) => (
+              <div
+                key={unidad.id}
+                onClick={() => setUnidadSeleccionada(unidad)}
+                className="cursor-pointer"
+              >
+                <UnidadCard unidad={unidad} />
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
 
-      {modalEstado.abierto && (
-        <CambioEstadoModal
-          modalEstado={modalEstado}
-          setModalEstado={setModalEstado}
-          onConfirmar={confirmarCambioEstado}
-        />
-      )}
-
-      {tramiteGastos && (
-        <GastosModal
-          tramite={tramiteGastos}
-          onClose={() => setTramiteGastos(null)}
-          onAgregarGasto={agregarGasto}
+      {unidadSeleccionada && (
+        <DetalleUnidadModal
+          unidad={unidadSeleccionada}
+          onClose={() => setUnidadSeleccionada(null)}
         />
       )}
     </section>
   );
 }
 
-function GastosModal({ tramite, onClose, onAgregarGasto }) {
-  const [nuevoGasto, setNuevoGasto] = useState({
-    fecha: new Date().toISOString().slice(0, 10),
-    concepto: "",
-    medioPago: "Efectivo",
-    importe: "",
-    observacion: "",
-  });
+function UnidadCard({ unidad }) {
+  return (
+    <article className="overflow-hidden rounded-3xl border border-[#acbac4]/30 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+      <div className="relative h-56 overflow-hidden bg-[#e8eef3]">
+        <img
+          src={unidad.imagen}
+          alt={`${unidad.marca} ${unidad.modelo}`}
+          className="h-full w-full object-cover"
+        />
 
-  const total = tramite.gastos.reduce((acc, gasto) => acc + gasto.importe, 0);
+        <span className="absolute right-3 top-3 rounded-full bg-white px-4 py-2 text-sm font-bold text-[#1a3263] shadow">
+          {unidad.anio}
+        </span>
 
-  const totalEfectivo = tramite.gastos
-    .filter((gasto) => gasto.medioPago === "Efectivo")
-    .reduce((acc, gasto) => acc + gasto.importe, 0);
+        <span className="absolute left-3 top-3 rounded-full bg-[#1a3263] px-3 py-1 text-xs font-bold uppercase text-white">
+          {unidad.tipo}
+        </span>
+      </div>
 
-  const totalTransferencia = tramite.gastos
-    .filter((gasto) => gasto.medioPago === "Transferencia")
-    .reduce((acc, gasto) => acc + gasto.importe, 0);
+      <div className="p-5">
+        <p className="mb-2 text-xs font-bold uppercase text-[#6b7c93]">
+          {unidad.tipo}
+        </p>
 
-  const guardarGasto = () => {
-    if (!nuevoGasto.concepto || !nuevoGasto.importe) return;
+        <h3 className="min-h-[56px] text-lg font-extrabold uppercase leading-tight text-[#1a3263]">
+          {unidad.marca} {unidad.modelo} {unidad.version}
+        </h3>
 
-    onAgregarGasto(tramite.id, {
-      ...nuevoGasto,
-      importe: Number(nuevoGasto.importe),
-    });
+        <div className="mt-5 flex items-center justify-between">
+          <p className="text-2xl font-bold text-[#357eb8]">
+            {formatMoney(unidad.precio)}
+          </p>
 
-    setNuevoGasto({
-      fecha: new Date().toISOString().slice(0, 10),
-      concepto: "",
-      medioPago: "Efectivo",
-      importe: "",
-      observacion: "",
-    });
+          <div className="flex h-11 w-11 items-center justify-center rounded-full border border-[#357eb8]/40 text-[#357eb8]">
+            <Search size={18} />
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function DetalleUnidadModal({ unidad, onClose }) {
+  const [imagenActual, setImagenActual] = useState(0);
+
+  const siguiente = () => {
+    setImagenActual((prev) =>
+      prev === unidad.imagenes.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const anterior = () => {
+    setImagenActual((prev) =>
+      prev === 0 ? unidad.imagenes.length - 1 : prev - 1
+    );
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-white shadow-xl">
-        <div className="flex items-start justify-between border-b border-[#acbac4]/40 p-6">
-          <div>
-            <h2 className="text-2xl font-bold text-[#1a3263]">
-              Gastos del trámite
-            </h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-5">
+      <div className="relative max-h-[92vh] w-full max-w-7xl overflow-hidden rounded-[2rem] bg-white shadow-2xl">
+        <button
+          onClick={onClose}
+          className="absolute right-6 top-6 z-10 rounded-full bg-white p-2 text-[#6b7c93] shadow hover:text-[#1a3263]"
+        >
+          <X size={26} />
+        </button>
 
-            <p className="text-[#357eb8]">
-              {tramite.venta} · {tramite.cliente} · {tramite.vehiculo}
-            </p>
-
-            <p className="text-sm text-[#6b7c93]">
-              {tramite.tramite} · {tramite.tipoUnidad}
-            </p>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="rounded-xl border border-[#acbac4] p-2 text-[#1a3263] hover:bg-[#acbac4]/15"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="max-h-[72vh] overflow-y-auto p-6">
-          <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-            <MiniTotalCard title="Total gastos" value={formatMoney(total)} />
-            <MiniTotalCard
-              title="Efectivo"
-              value={formatMoney(totalEfectivo)}
-            />
-            <MiniTotalCard
-              title="Transferencias"
-              value={formatMoney(totalTransferencia)}
-            />
-          </div>
-
-          <div className="mb-6 rounded-2xl border border-[#acbac4]/50 bg-[#f8fafc] p-5">
-            <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-[#1a3263]">
-              <Plus size={20} />
-              Cargar nuevo gasto
-            </h3>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
-              <div>
-                <label className="mb-1 block text-sm font-semibold text-[#1a3263]">
-                  Fecha
-                </label>
-                <input
-                  type="date"
-                  value={nuevoGasto.fecha}
-                  onChange={(e) =>
-                    setNuevoGasto((prev) => ({
-                      ...prev,
-                      fecha: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-xl border border-[#acbac4] px-4 py-3 outline-none"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-semibold text-[#1a3263]">
-                  Concepto
-                </label>
-                <input
-                  value={nuevoGasto.concepto}
-                  onChange={(e) =>
-                    setNuevoGasto((prev) => ({
-                      ...prev,
-                      concepto: e.target.value,
-                    }))
-                  }
-                  placeholder="Ej: Patentamiento, formulario, impresión..."
-                  className="w-full rounded-xl border border-[#acbac4] px-4 py-3 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-semibold text-[#1a3263]">
-                  Medio
-                </label>
-                <select
-                  value={nuevoGasto.medioPago}
-                  onChange={(e) =>
-                    setNuevoGasto((prev) => ({
-                      ...prev,
-                      medioPago: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-xl border border-[#acbac4] px-4 py-3 outline-none"
-                >
-                  <option>Efectivo</option>
-                  <option>Transferencia</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-semibold text-[#1a3263]">
-                  Importe
-                </label>
-                <input
-                  type="number"
-                  value={nuevoGasto.importe}
-                  onChange={(e) =>
-                    setNuevoGasto((prev) => ({
-                      ...prev,
-                      importe: e.target.value,
-                    }))
-                  }
-                  placeholder="$0"
-                  className="w-full rounded-xl border border-[#acbac4] px-4 py-3 outline-none"
-                />
-              </div>
-
-              <div className="md:col-span-4">
-                <label className="mb-1 block text-sm font-semibold text-[#1a3263]">
-                  Observación
-                </label>
-                <input
-                  value={nuevoGasto.observacion}
-                  onChange={(e) =>
-                    setNuevoGasto((prev) => ({
-                      ...prev,
-                      observacion: e.target.value,
-                    }))
-                  }
-                  placeholder="Detalle opcional del gasto..."
-                  className="w-full rounded-xl border border-[#acbac4] px-4 py-3 outline-none"
-                />
-              </div>
-
-              <div className="flex items-end">
+        <div className="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr]">
+          <div className="flex gap-4 bg-[#f8fafc] p-6">
+            <div className="hidden w-20 space-y-3 xl:block">
+              {unidad.imagenes.map((img, index) => (
                 <button
-                  onClick={guardarGasto}
-                  className="w-full rounded-xl bg-[#1a3263] px-5 py-3 font-semibold text-white hover:bg-[#16284f]"
+                  key={img}
+                  onClick={() => setImagenActual(index)}
+                  className={`h-20 w-20 overflow-hidden rounded-xl border-2 bg-white ${
+                    imagenActual === index
+                      ? "border-[#357eb8]"
+                      : "border-transparent"
+                  }`}
                 >
-                  Agregar gasto
+                  <img
+                    src={img}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
                 </button>
-              </div>
+              ))}
+            </div>
+
+            <div className="relative flex-1 overflow-hidden rounded-2xl bg-white">
+              <span className="absolute left-4 top-4 z-10 rounded-full bg-[#1a3263] px-4 py-2 text-sm font-bold uppercase text-white shadow">
+                {unidad.tipo}
+              </span>
+
+              <img
+                src={unidad.imagenes[imagenActual]}
+                alt={unidad.modelo}
+                className="h-[560px] w-full object-cover"
+              />
+
+              <button
+                onClick={anterior}
+                className="absolute left-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white"
+              >
+                <ChevronLeft />
+              </button>
+
+              <button
+                onClick={siguiente}
+                className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white"
+              >
+                <ChevronRight />
+              </button>
             </div>
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-[#acbac4]/60">
-            <table className="w-full min-w-[900px] text-left">
-              <thead className="bg-[#1a3263] text-white">
-                <tr>
-                  <th className="p-4">Fecha</th>
-                  <th className="p-4">Concepto</th>
-                  <th className="p-4">Medio</th>
-                  <th className="p-4">Importe</th>
-                  <th className="p-4">Observación</th>
-                </tr>
-              </thead>
+          <div className="p-8 xl:p-10">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-3xl font-extrabold uppercase text-[#1a3263]">
+                  {unidad.marca} {unidad.modelo}
+                </h2>
 
-              <tbody className="text-[#1a3263]">
-                {tramite.gastos.map((gasto) => (
-                  <tr
-                    key={gasto.id}
-                    className="border-t border-[#acbac4]/40 hover:bg-[#acbac4]/10"
-                  >
-                    <td className="p-4">{gasto.fecha}</td>
-                    <td className="p-4 font-semibold">{gasto.concepto}</td>
-                    <td className="p-4">
-                      <MedioPagoBadge medio={gasto.medioPago} />
-                    </td>
-                    <td className="p-4 font-bold">
-                      {formatMoney(gasto.importe)}
-                    </td>
-                    <td className="p-4 text-[#6b7c93]">
-                      {gasto.observacion || "-"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {tramite.gastos.length === 0 && (
-              <div className="p-8 text-center text-[#357eb8]">
-                Este trámite todavía no tiene gastos cargados.
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex justify-end border-t border-[#acbac4]/40 p-5">
-          <button
-            onClick={onClose}
-            className="rounded-xl border border-[#acbac4] px-5 py-2 font-semibold text-[#1a3263] hover:bg-[#acbac4]/15"
-          >
-            Cerrar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ChecklistModal({ notificacion, onClose }) {
-  const recibidos = notificacion.checklist.filter((item) => item.recibido).length;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-xl">
-        <div className="flex items-start justify-between border-b border-[#acbac4]/40 p-6">
-          <div>
-            <h2 className="text-2xl font-bold text-[#1a3263]">
-              Checklist recibido
-            </h2>
-
-            <p className="text-[#357eb8]">
-              {notificacion.vehiculo} · {notificacion.cliente}
-            </p>
-
-            <p className="text-sm text-[#6b7c93]">
-              Recibidos {recibidos} de {notificacion.checklist.length} · Enviado
-              por {notificacion.enviadaPor}
-            </p>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="rounded-xl border border-[#acbac4] p-2 text-[#1a3263] hover:bg-[#acbac4]/15"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="max-h-[65vh] overflow-y-auto p-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {notificacion.checklist.map((item, index) => (
-              <div
-                key={index}
-                className="rounded-2xl border border-[#acbac4]/50 bg-[#f8fafc] p-4"
-              >
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <p className="font-bold text-[#1a3263]">{item.nombre}</p>
-
-                  <span
-                    className={`rounded-lg px-3 py-1 text-sm font-semibold ${
-                      item.recibido
-                        ? "bg-[#26aa9c]/15 text-[#1b7f75]"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {item.recibido ? "Recibido" : "Pendiente"}
-                  </span>
-                </div>
-
-                <p className="text-sm text-[#6b7c93]">
-                  {item.observacion || "Sin observaciones"}
+                <p className="mt-2 text-xl text-[#6b7c93]">
+                  {unidad.version}
                 </p>
               </div>
-            ))}
+
+              <button className="rounded-full border border-[#357eb8]/30 p-3 text-[#357eb8] hover:bg-[#357eb8]/10">
+                <Share2 size={22} />
+              </button>
+            </div>
+
+            <div className="mb-8 grid grid-cols-2 divide-x divide-[#acbac4]/50 border-y border-[#acbac4]/40 py-5">
+              <div>
+                <p className="text-sm font-bold uppercase text-[#6b7c93]">
+                  Año
+                </p>
+                <p className="text-2xl font-bold text-[#1a3263]">
+                  {unidad.anio}
+                </p>
+              </div>
+
+              <div className="pl-8">
+                <p className="text-sm font-bold uppercase text-[#6b7c93]">
+                  Color
+                </p>
+                <p className="text-2xl font-bold uppercase text-[#1a3263]">
+                  {unidad.color}
+                </p>
+              </div>
+            </div>
+
+            <h3 className="mb-4 text-xl font-bold text-[#1a3263]">
+              ¿Consultar por esta unidad?
+            </h3>
+
+            <div className="space-y-3">
+              <input
+                placeholder="Nombre completo"
+                className="w-full rounded-2xl border border-transparent bg-[#f4f7f8] px-5 py-4 text-[#1a3263] outline-none focus:border-[#357eb8]"
+              />
+
+              <input
+                placeholder="Apellido"
+                className="w-full rounded-2xl border border-transparent bg-[#f4f7f8] px-5 py-4 text-[#1a3263] outline-none focus:border-[#357eb8]"
+              />
+
+              <input
+                placeholder="WhatsApp / Teléfono"
+                className="w-full rounded-2xl border border-transparent bg-[#f4f7f8] px-5 py-4 text-[#1a3263] outline-none focus:border-[#357eb8]"
+              />
+
+              <button className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#357eb8] px-5 py-4 text-lg font-bold text-white shadow hover:bg-[#1a3263]">
+                Solicitar información
+                <Send size={20} />
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div className="flex justify-end gap-3 border-t border-[#acbac4]/40 p-5">
-          <button
-            onClick={onClose}
-            className="rounded-xl border border-[#acbac4] px-5 py-2 font-semibold text-[#1a3263] hover:bg-[#acbac4]/15"
-          >
-            Cerrar
-          </button>
-
-          <button className="rounded-xl bg-[#26aa9c] px-5 py-2 font-semibold text-white hover:bg-[#219b8f]">
-            Marcar como revisado
-          </button>
         </div>
       </div>
     </div>
-  );
-}
-
-function CambioEstadoModal({ modalEstado, setModalEstado, onConfirmar }) {
-  const { tramite, nuevoEstado, observacion } = modalEstado;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-xl rounded-2xl bg-white shadow-xl">
-        <div className="flex items-start justify-between border-b border-[#acbac4]/40 p-6">
-          <div>
-            <h2 className="text-xl font-bold text-[#1a3263]">
-              Cambiar estado del trámite
-            </h2>
-
-            <p className="text-sm text-[#357eb8]">
-              {tramite.venta} · {tramite.cliente}
-            </p>
-          </div>
-
-          <button
-            onClick={() =>
-              setModalEstado({
-                abierto: false,
-                tramite: null,
-                nuevoEstado: "",
-                observacion: "",
-              })
-            }
-            className="rounded-xl border border-[#acbac4] p-2 text-[#1a3263] hover:bg-[#acbac4]/15"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="space-y-5 p-6">
-          <div className="rounded-xl bg-[#f8fafc] p-4">
-            <p className="text-sm text-[#357eb8]">Nuevo estado</p>
-            <p className="mt-1 font-bold text-[#1a3263]">{nuevoEstado}</p>
-          </div>
-
-          <div>
-            <label className="mb-2 flex items-center gap-2 font-semibold text-[#1a3263]">
-              <MessageSquareText size={18} />
-              Observación del cambio
-            </label>
-
-            <textarea
-              value={observacion}
-              onChange={(e) =>
-                setModalEstado((prev) => ({
-                  ...prev,
-                  observacion: e.target.value,
-                }))
-              }
-              rows={5}
-              placeholder="Agregar observación..."
-              className="w-full resize-none rounded-xl border border-[#acbac4] px-4 py-3 text-[#1a3263] outline-none focus:border-[#357eb8] focus:ring-2 focus:ring-[#357eb8]/20"
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-end gap-3 border-t border-[#acbac4]/40 p-5">
-          <button
-            onClick={() =>
-              setModalEstado({
-                abierto: false,
-                tramite: null,
-                nuevoEstado: "",
-                observacion: "",
-              })
-            }
-            className="rounded-xl border border-[#acbac4] px-5 py-2 font-semibold text-[#1a3263] hover:bg-[#acbac4]/15"
-          >
-            Cancelar
-          </button>
-
-          <button
-            onClick={onConfirmar}
-            className="rounded-xl bg-[#1a3263] px-5 py-2 font-semibold text-white hover:bg-[#16284f]"
-          >
-            Guardar cambio
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MetricCard({ title, value, icon: Icon, highlight = false, warning = false }) {
-  return (
-    <div className="rounded-2xl border border-[#acbac4]/40 bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-[#357eb8]">{title}</p>
-
-          <p
-            className={`mt-2 text-3xl font-bold ${
-              highlight
-                ? "text-[#26aa9c]"
-                : warning
-                ? "text-yellow-600"
-                : "text-[#1a3263]"
-            }`}
-          >
-            {value}
-          </p>
-        </div>
-
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#acbac4]/20 text-[#1a3263]">
-          <Icon size={24} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MiniTotalCard({ title, value }) {
-  return (
-    <div className="rounded-2xl border border-[#acbac4]/40 bg-white p-4">
-      <p className="text-sm text-[#357eb8]">{title}</p>
-      <p className="mt-1 text-2xl font-bold text-[#1a3263]">{value}</p>
-    </div>
-  );
-}
-
-function TipoBadge({ tipo }) {
-  const styles = {
-    "0KM": "bg-[#357eb8]/15 text-[#245f91]",
-    Usado: "bg-[#26aa9c]/15 text-[#1b7f75]",
-  };
-
-  return (
-    <span
-      className={`rounded-lg px-3 py-1 text-sm font-semibold ${
-        styles[tipo] || "bg-[#acbac4]/25 text-[#1a3263]"
-      }`}
-    >
-      {tipo}
-    </span>
-  );
-}
-
-function EstadoBadge({ estado }) {
-  const styles = {
-    "Documentación pedida": "bg-yellow-100 text-yellow-700",
-    "Documentación recibida": "bg-[#26aa9c]/15 text-[#1b7f75]",
-    "En proceso": "bg-[#357eb8]/15 text-[#245f91]",
-    "Listo para inscribir": "bg-[#357eb8]/15 text-[#245f91]",
-    "Listo para transferir": "bg-[#357eb8]/15 text-[#245f91]",
-    Presentado: "bg-[#357eb8]/15 text-[#245f91]",
-    Observado: "bg-orange-100 text-orange-700",
-    Inscripto: "bg-green-100 text-green-700",
-    Transferido: "bg-green-100 text-green-700",
-  };
-
-  return (
-    <span
-      className={`whitespace-nowrap rounded-lg px-3 py-1 text-sm font-semibold ${
-        styles[estado] || "bg-[#acbac4]/25 text-[#1a3263]"
-      }`}
-    >
-      {estado}
-    </span>
-  );
-}
-
-function MedioPagoBadge({ medio }) {
-  const styles = {
-    Efectivo: "bg-yellow-100 text-yellow-700",
-    Transferencia: "bg-[#357eb8]/15 text-[#245f91]",
-  };
-
-  return (
-    <span
-      className={`rounded-lg px-3 py-1 text-sm font-semibold ${
-        styles[medio] || "bg-[#acbac4]/25 text-[#1a3263]"
-      }`}
-    >
-      {medio}
-    </span>
   );
 }

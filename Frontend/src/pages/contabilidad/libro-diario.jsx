@@ -82,7 +82,7 @@ const comprasProveedor = [
 
 const movimientosIniciales = [
   {
-    fecha: "01/07/2024",
+    fecha: "01/05/2026",
     hora: "09:12",
     tipo: "Cobro",
     origen: "Caja diaria",
@@ -95,11 +95,11 @@ const movimientosIniciales = [
     saldo: "$1.000.000",
   },
   {
-    fecha: "01/07/2024",
+    fecha: "01/05/2026",
     hora: "10:45",
     tipo: "Pago",
     origen: "Gasto operativo",
-    concepto: "Pago de luz de casa Dario",
+    concepto: "Pago de luz agencia",
     cuenta: "Caja",
     medio: "Efectivo",
     moneda: "ARS",
@@ -108,11 +108,11 @@ const movimientosIniciales = [
     saldo: "$844.069",
   },
   {
-    fecha: "01/07/2024",
+    fecha: "02/05/2026",
     hora: "11:30",
     tipo: "Pago",
     origen: "Gasto operativo",
-    concepto: "Pago de luz de agencias",
+    concepto: "Pago de internet",
     cuenta: "Caja",
     medio: "Efectivo",
     moneda: "ARS",
@@ -121,33 +121,33 @@ const movimientosIniciales = [
     saldo: "$694.830",
   },
   {
-    fecha: "02/07/2024",
+    fecha: "03/05/2026",
     hora: "09:05",
     tipo: "Cobro",
-    origen: "Caja diaria",
-    concepto: "Ingreso de caja",
-    cuenta: "Caja",
-    medio: "Efectivo",
+    origen: "Venta #1260",
+    concepto: "Cobro por venta de vehículo",
+    cuenta: "Banco Galicia",
+    medio: "Transferencia",
     moneda: "ARS",
     cotizacion: "",
-    importe: 1000000,
-    saldo: "$1.694.830",
+    importe: 2500000,
+    saldo: "$3.194.830",
   },
   {
-    fecha: "02/07/2024",
+    fecha: "04/05/2026",
     hora: "10:10",
     tipo: "Pago",
-    origen: "Gasto operativo",
-    concepto: "Pago a Juan Villareal Polarizado",
-    cuenta: "Caja",
-    medio: "Efectivo",
+    origen: "Proveedor",
+    concepto: "Pago a proveedor con cheque",
+    cuenta: "Cheques en cartera",
+    medio: "Cheques",
     moneda: "ARS",
     cotizacion: "",
-    importe: 80000,
-    saldo: "$1.614.830",
+    importe: 950000,
+    saldo: "$2.244.830",
   },
   {
-    fecha: "03/07/2024",
+    fecha: "05/05/2026",
     hora: "09:00",
     tipo: "Cobro",
     origen: "Caja USD",
@@ -160,30 +160,121 @@ const movimientosIniciales = [
     saldo: "USD 8.000",
   },
   {
-    fecha: "03/07/2024",
+    fecha: "06/05/2026",
     hora: "12:20",
     tipo: "Cobro",
-    origen: "Venta #1260",
+    origen: "Venta #1268",
     concepto: "Cobro con cheque",
     cuenta: "Cheques en cartera",
     medio: "Cheques",
     moneda: "ARS",
     cotizacion: "",
     importe: 2500000,
-    saldo: "$4.114.830",
+    saldo: "$4.744.830",
   },
   {
-    fecha: "04/07/2024",
+    fecha: "07/05/2026",
     hora: "13:00",
-    tipo: "Pago",
-    origen: "Proveedor",
-    concepto: "Pago proveedor con cheque",
-    cuenta: "Banco Galicia",
-    medio: "Cheques",
+    tipo: "Gasto",
+    origen: "Gasto fijo",
+    concepto: "Pago alquiler local",
+    cuenta: "Banco Santander",
+    medio: "Transferencia",
     moneda: "ARS",
     cotizacion: "",
-    importe: 950000,
-    saldo: "$3.164.830",
+    importe: 1200000,
+    saldo: "$3.544.830",
+  },
+  {
+    fecha: "08/05/2026",
+    hora: "15:40",
+    tipo: "Cobro",
+    origen: "Cobro financiación",
+    concepto: "Cobro cuota financiación propia",
+    cuenta: "Banco Galicia",
+    medio: "Transferencia",
+    moneda: "ARS",
+    cotizacion: "",
+    importe: 850000,
+    saldo: "$4.394.830",
+  },
+  {
+    fecha: "10/05/2026",
+    hora: "09:30",
+    tipo: "Pago",
+    origen: "Taller mecánico",
+    concepto: "Pago reparación Ford Ranger",
+    cuenta: "Banco Galicia",
+    medio: "Transferencia",
+    moneda: "ARS",
+    cotizacion: "",
+    importe: 480000,
+    saldo: "$3.914.830",
+  },
+  {
+    fecha: "12/05/2026",
+    hora: "11:10",
+    tipo: "Cobro",
+    origen: "Venta #1270",
+    concepto: "Entrega efectivo cliente",
+    cuenta: "Caja",
+    medio: "Efectivo",
+    moneda: "ARS",
+    cotizacion: "",
+    importe: 3200000,
+    saldo: "$7.114.830",
+  },
+  {
+    fecha: "15/05/2026",
+    hora: "16:20",
+    tipo: "Pago",
+    origen: "Proveedor",
+    concepto: "Pago Toyota Argentina",
+    cuenta: "Banco Santander",
+    medio: "Transferencia",
+    moneda: "ARS",
+    cotizacion: "",
+    importe: 2100000,
+    saldo: "$5.014.830",
+  },
+  {
+    fecha: "18/05/2026",
+    hora: "10:00",
+    tipo: "Cobro",
+    origen: "Caja diaria",
+    concepto: "Ingreso por venta usada",
+    cuenta: "Caja",
+    medio: "Efectivo",
+    moneda: "ARS",
+    cotizacion: "",
+    importe: 1750000,
+    saldo: "$6.764.830",
+  },
+  {
+    fecha: "20/05/2026",
+    hora: "14:15",
+    tipo: "Pago",
+    origen: "Gasto operativo",
+    concepto: "Pago publicidad Meta Ads",
+    cuenta: "Mercado Pago",
+    medio: "Transferencia",
+    moneda: "ARS",
+    cotizacion: "",
+    importe: 320000,
+    saldo: "$6.444.830",
+  },
+  {
+    fecha: "22/05/2026",
+    hora: "17:00",
+    tipo: "Cobro",
+    origen: "Venta #1275",
+    concepto: "Cobro transferencia cliente",
+    cuenta: "Banco Galicia",
+    medio: "Transferencia",
+    moneda: "ARS",
+    cotizacion: "",
+    importe: 4100000,
+    saldo: "$10.544.830",
   },
 ];
 
@@ -223,14 +314,9 @@ export default function LibroDiarioPage() {
   const [movimientos, setMovimientos] = useState(movimientosIniciales);
   const [form, setForm] = useState(formInicial);
 
-  const [filtrosDashboard, setFiltrosDashboard] = useState({
-    desde: "2026-05-01",
+  const [filtros, setFiltros] = useState({
+    desde: "2026-04-29",
     hasta: "2026-05-31",
-  });
-
-  const [filtrosLibro, setFiltrosLibro] = useState({
-    desde: "",
-    hasta: "",
     tipo: "Todos los tipos",
     busqueda: "",
   });
@@ -244,21 +330,23 @@ export default function LibroDiarioPage() {
 
   const dentroDelRango = (fecha) => {
     if (!fecha) return true;
-    return fecha >= filtrosDashboard.desde && fecha <= filtrosDashboard.hasta;
+    const desde = filtros.desde || "0000-01-01";
+    const hasta = filtros.hasta || "9999-12-31";
+    return fecha >= desde && fecha <= hasta;
   };
 
   const movimientosFiltrados = useMemo(() => {
     return movimientos.filter((mov) => {
       const fechaISO = convertirFechaISO(mov.fecha);
-      const cumpleDesde = !filtrosLibro.desde || fechaISO >= filtrosLibro.desde;
-      const cumpleHasta = !filtrosLibro.hasta || fechaISO <= filtrosLibro.hasta;
-      const cumpleTipo = filtrosLibro.tipo === "Todos los tipos" || mov.tipo === filtrosLibro.tipo;
-      const texto = `${mov.fecha} ${mov.hora} ${mov.tipo} ${mov.origen} ${mov.concepto} ${mov.cuenta} ${mov.medio} ${mov.moneda}`.toLowerCase();
-      const cumpleBusqueda = texto.includes(filtrosLibro.busqueda.toLowerCase());
+      const cumpleDesde = !filtros.desde || fechaISO >= filtros.desde;
+      const cumpleHasta = !filtros.hasta || fechaISO <= filtros.hasta;
+      const cumpleTipo = filtros.tipo === "Todos los tipos" || mov.tipo === filtros.tipo;
+      const texto = [mov.fecha, mov.hora, mov.tipo, mov.origen, mov.concepto, mov.cuenta, mov.medio, mov.moneda].join(" ").toLowerCase();
+      const cumpleBusqueda = texto.includes(filtros.busqueda.toLowerCase());
 
       return cumpleDesde && cumpleHasta && cumpleTipo && cumpleBusqueda;
     });
-  }, [movimientos, filtrosLibro]);
+  }, [movimientos, filtros]);
 
   const resumenFinanciero = useMemo(() => {
     const sum = (arr) => arr.reduce((acc, item) => acc + (item.monto || 0), 0);
@@ -282,7 +370,7 @@ export default function LibroDiarioPage() {
       { id: "gastos-fijos", title: "Gastos fijos por pagar", value: sum(gastosItems), subtitle: "Vencimientos administrativos", icon: CreditCard, color: "orange", items: gastosItems },
       { id: "cheques-caucion", title: "Cheques en caución", value: sum(caucionItems), subtitle: "Cheques caucionados", icon: ShieldCheck, color: "purple", items: caucionItems },
     ];
-  }, [filtrosDashboard]);
+  }, [filtros]);
 
   const guardarMovimiento = (tipo) => {
     const vehiculo = vehiculos.find((v) => v.id === form.vehiculoId);
@@ -356,16 +444,25 @@ export default function LibroDiarioPage() {
 
       <div className="mb-6 rounded-2xl border border-[#acbac4]/40 bg-white p-5 shadow-sm">
         <div className="mb-4 flex items-center gap-2">
-          <CalendarDays size={20} className="text-[#357eb8]" />
-          <h2 className="text-lg font-bold text-[#1a3263]">Filtros del dashboard</h2>
+          <Filter size={19} className="text-[#357eb8]" />
+          <h2 className="text-lg font-bold text-[#1a3263]">Filtros generales</h2>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-[220px_220px_1fr]">
-          <Input label="Desde" type="date" value={filtrosDashboard.desde} onChange={(v) => setFiltrosDashboard((prev) => ({ ...prev, desde: v }))} />
-          <Input label="Hasta" type="date" value={filtrosDashboard.hasta} onChange={(v) => setFiltrosDashboard((prev) => ({ ...prev, hasta: v }))} />
+        <div className="grid gap-3 xl:grid-cols-[170px_170px_190px_1fr_120px]">
+          <Input label="Desde" type="date" value={filtros.desde} onChange={(v) => setFiltros((prev) => ({ ...prev, desde: v }))} />
+          <Input label="Hasta" type="date" value={filtros.hasta} onChange={(v) => setFiltros((prev) => ({ ...prev, hasta: v }))} />
+
+          <SelectBase label="Tipo" value={filtros.tipo} onChange={(v) => setFiltros((prev) => ({ ...prev, tipo: v }))} options={["Todos los tipos", "Cobro", "Pago", "Gasto", "Transferencia"]} />
+
+          <div>
+            <span className="mb-1 block font-semibold text-[#1a3263]">Buscar</span>
+            <SearchInput value={filtros.busqueda} onChange={(v) => setFiltros((prev) => ({ ...prev, busqueda: v }))} placeholder="Buscar por concepto, origen, cuenta o medio..." />
+          </div>
 
           <div className="flex items-end">
-            <p className="rounded-xl bg-[#f8fafc] px-4 py-3 text-sm font-semibold text-[#357eb8]">Resumen financiero por rango de fecha.</p>
+            <button onClick={() => setFiltros({ desde: "", hasta: "", tipo: "Todos los tipos", busqueda: "" })} className="h-[48px] w-full rounded-xl border border-[#acbac4] bg-white px-4 font-semibold text-[#1a3263] transition hover:bg-[#f8fafc]">
+              Limpiar
+            </button>
           </div>
         </div>
       </div>
@@ -374,31 +471,6 @@ export default function LibroDiarioPage() {
         {resumenFinanciero.map((card) => (
           <FinancialCard key={card.id} card={card} onClick={() => setDrawer(card)} />
         ))}
-      </div>
-
-      <div className="mb-5 rounded-2xl border border-[#acbac4]/40 bg-white p-5 shadow-sm">
-        <div className="mb-4 flex items-center gap-2">
-          <Filter size={19} className="text-[#357eb8]" />
-          <h2 className="text-lg font-bold text-[#1a3263]">Filtros del libro diario</h2>
-        </div>
-
-        <div className="grid gap-3 xl:grid-cols-[170px_170px_190px_1fr_120px]">
-          <Input label="Desde" type="date" value={filtrosLibro.desde} onChange={(v) => setFiltrosLibro((prev) => ({ ...prev, desde: v }))} />
-          <Input label="Hasta" type="date" value={filtrosLibro.hasta} onChange={(v) => setFiltrosLibro((prev) => ({ ...prev, hasta: v }))} />
-
-          <SelectBase label="Tipo" value={filtrosLibro.tipo} onChange={(v) => setFiltrosLibro((prev) => ({ ...prev, tipo: v }))} options={["Todos los tipos", "Cobro", "Pago", "Gasto", "Transferencia"]} />
-
-          <div>
-            <span className="mb-1 block font-semibold text-[#1a3263]">Buscar</span>
-            <SearchInput value={filtrosLibro.busqueda} onChange={(v) => setFiltrosLibro((prev) => ({ ...prev, busqueda: v }))} placeholder="Buscar por concepto, origen, cuenta o medio..." />
-          </div>
-
-          <div className="flex items-end">
-            <button onClick={() => setFiltrosLibro({ desde: "", hasta: "", tipo: "Todos los tipos", busqueda: "" })} className="h-[48px] w-full rounded-xl border border-[#acbac4] bg-white px-4 font-semibold text-[#1a3263] transition hover:bg-[#f8fafc]">
-              Limpiar
-            </button>
-          </div>
-        </div>
       </div>
 
       <LibroDiarioSistemaTable movimientos={movimientosFiltrados} />
@@ -444,84 +516,25 @@ function LibroDiarioSistemaTable({ movimientos }) {
 
   const totalIngresos = totalGrupo(totales.ingresos);
   const totalEgresos = totalGrupo(totales.egresos);
-  const saldoNeto = totalIngresos - totalEgresos;
+  const ultimoSaldo = movimientos?.length ? movimientos[movimientos.length - 1].saldo : "$0";
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-[#acbac4]/40 bg-white shadow-sm">
-      <div className="border-b border-[#acbac4]/30 bg-[#f8fafc] p-5">
-        <div className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
-          <div>
-            <p className="text-sm font-semibold text-[#357eb8]">Caja diaria</p>
-            <h2 className="text-2xl font-bold text-[#1a3263]">Libro de movimientos</h2>
-            <p className="mt-1 text-sm text-[#6b7a90]">Lectura rápida por debe, haber, medio de pago y saldo.</p>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MiniTotalCard title="Ingresos" value={totalIngresos} type="ingreso" />
-            <MiniTotalCard title="Egresos" value={totalEgresos} type="egreso" />
-            <MiniTotalCard title="Saldo neto" value={saldoNeto} type={saldoNeto >= 0 ? "ingreso" : "egreso"} />
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-4 border-b border-[#acbac4]/30 bg-white p-5 xl:grid-cols-5">
-        <ResumenMedioCard label="Efectivo" ingreso={totales.ingresos.Efectivo} egreso={totales.egresos.Efectivo} />
-        <ResumenMedioCard label="Cheques" ingreso={totales.ingresos.Cheques} egreso={totales.egresos.Cheques} />
-        <ResumenMedioCard label="Transferencias" ingreso={totales.ingresos.Transferencias} egreso={totales.egresos.Transferencias} />
-        <ResumenMedioCard label="Dólares" ingreso={totales.ingresos.Dolares} egreso={totales.egresos.Dolares} moneda="USD" />
-        <ResumenMedioCard label="Otros" ingreso={totales.ingresos.Otros} egreso={totales.egresos.Otros} />
-      </div>
-
+    <div className="overflow-hidden rounded-2xl border border-[#acbac4]/40 bg-white shadow-sm">
       {movimientos.length === 0 ? (
         <div className="p-5">
           <EmptyState text="No se encontraron movimientos para los filtros seleccionados." />
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1500px] border-separate border-spacing-0 text-left text-sm">
+          <table className="w-full min-w-[1070px] border-separate border-spacing-0 text-left text-sm">
             <thead>
-              <tr className="bg-[#1a3263] text-white">
-                <th className="sticky left-0 z-30 min-w-[115px] border-r border-white/10 bg-[#1a3263] p-4 font-bold">Fecha</th>
-                <th className="sticky left-[115px] z-30 min-w-[360px] border-r border-white/10 bg-[#1a3263] p-4 font-bold">Movimiento</th>
-                <th className="min-w-[130px] p-4 font-bold">Cuenta</th>
-                <th className="min-w-[115px] p-4 font-bold">Cotiz.</th>
-
-                <th colSpan={5} className="border-l border-white/20 bg-[#17305f] p-4 text-center">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-[#26aa9c]/20 px-5 py-2 text-sm font-bold text-white">
-                    <ArrowUp size={16} />
-                    Debe / Ingresos
-                  </span>
-                </th>
-
-                <th colSpan={5} className="border-l border-white/20 bg-[#17305f] p-4 text-center">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-red-500/20 px-5 py-2 text-sm font-bold text-white">
-                    <ArrowDown size={16} />
-                    Haber / Egresos
-                  </span>
-                </th>
-
-                <th className="min-w-[150px] border-l border-white/20 p-4 font-bold">Saldo</th>
-              </tr>
-
-              <tr className="bg-[#244575] text-white">
-                <th className="sticky left-0 z-30 border-r border-white/10 bg-[#244575] p-3"></th>
-                <th className="sticky left-[115px] z-30 border-r border-white/10 bg-[#244575] p-3"></th>
-                <th className="p-3"></th>
-                <th className="p-3"></th>
-
-                <TableSubHeader label="USD" type="ingreso" />
-                <TableSubHeader label="Efectivo" type="ingreso" />
-                <TableSubHeader label="Cheques" type="ingreso" />
-                <TableSubHeader label="Transfer." type="ingreso" />
-                <TableSubHeader label="Otros" type="ingreso" />
-
-                <TableSubHeader label="USD" type="egreso" />
-                <TableSubHeader label="Efectivo" type="egreso" />
-                <TableSubHeader label="Cheques" type="egreso" />
-                <TableSubHeader label="Transfer." type="egreso" />
-                <TableSubHeader label="Otros" type="egreso" />
-
-                <th className="p-3"></th>
+              <tr className="bg-[#142b63] text-white">
+                <th className="min-w-[120px] border-r border-white/15 p-4 text-center font-bold">Fecha</th>
+                <th className="min-w-[320px] border-r border-white/15 p-4 font-bold">Movimiento</th>
+                <th className="min-w-[165px] border-r border-white/15 p-4 font-bold">Cuenta</th>
+                <th className="min-w-[300px] border-r border-white/15 p-4 text-center font-bold">Debe / Ingresos</th>
+                <th className="min-w-[300px] border-r border-white/15 p-4 text-center font-bold">Haber / Egresos</th>
+                <th className="min-w-[170px] p-4 text-center font-bold">Saldo</th>
               </tr>
             </thead>
 
@@ -531,76 +544,71 @@ function LibroDiarioSistemaTable({ movimientos }) {
                 const medio = normalizarMedio(mov.medio);
 
                 return (
-                  <tr key={index} className="group border-b border-[#acbac4]/25 hover:bg-[#f8fafc]">
-                    <td className="sticky left-0 z-20 border-b border-[#acbac4]/25 bg-white p-4 align-top group-hover:bg-[#f8fafc]">
-                      <div className="rounded-2xl bg-[#357eb8]/10 px-3 py-2 text-center">
+                  <tr key={index} className="group hover:bg-[#f8fafc]">
+                    <td className="border-b border-r border-[#acbac4]/25 p-4 align-top">
+                      <div className="rounded-xl bg-[#eef3f9] px-3 py-3 text-center shadow-sm">
                         <p className="font-bold text-[#1a3263]">{mov.fecha}</p>
-                        <p className="mt-1 text-xs font-semibold text-[#357eb8]">{mov.hora}</p>
+                        <p className="mt-1 text-xs font-bold text-[#357eb8]">{mov.hora}</p>
                       </div>
                     </td>
 
-                    <td className="sticky left-[115px] z-20 border-b border-[#acbac4]/25 bg-white p-4 align-top group-hover:bg-[#f8fafc]">
+                    <td className="border-b border-r border-[#acbac4]/25 p-4 align-top">
                       <div className="flex gap-3">
-                        <div className={`mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${esIngreso ? "bg-[#26aa9c]/10 text-[#1b7f75]" : "bg-red-50 text-red-700"}`}>
-                          {esIngreso ? <ArrowUp size={19} /> : <ArrowDown size={19} />}
+                        <div className={`mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${esIngreso ? "bg-[#26aa9c]/12 text-[#1b7f75]" : "bg-red-50 text-red-700"}`}>
+                          {esIngreso ? <ArrowUp size={22} /> : <ArrowDown size={22} />}
                         </div>
 
                         <div className="min-w-0">
-                          <p className="truncate font-bold text-[#1a3263]">{mov.concepto}</p>
+                          <p className="font-bold text-[#1a3263]">{mov.concepto}</p>
                           <p className="mt-1 text-xs font-semibold text-[#357eb8]">{mov.origen}</p>
 
                           <div className="mt-2 flex flex-wrap gap-2">
                             <TipoBadge tipo={mov.tipo} />
                             <MedioPill medio={medio} />
-                            <span className="rounded-lg bg-[#f8fafc] px-3 py-1 text-xs font-bold text-[#6b7a90]">{mov.moneda}</span>
+                            <span className="rounded-lg bg-[#eef3f9] px-3 py-1 text-xs font-bold text-[#6b7a90]">{mov.moneda}</span>
                             {mov.detalleCheque && <span className="rounded-lg bg-purple-50 px-3 py-1 text-xs font-bold text-purple-700">{mov.detalleCheque}</span>}
                           </div>
                         </div>
                       </div>
                     </td>
 
-                    <td className="border-b border-[#acbac4]/25 p-4 align-top">
+                    <td className="border-b border-r border-[#acbac4]/25 p-4 align-top">
                       <p className="font-bold text-[#1a3263]">{mov.cuenta}</p>
                       <p className="mt-1 text-xs text-[#6b7a90]">Cuenta asociada</p>
                     </td>
 
-                    <td className="border-b border-[#acbac4]/25 p-4 align-top font-semibold text-[#357eb8]">{mov.cotizacion ? `$${mov.cotizacion}` : "-"}</td>
 
-                    <AmountCell active={esIngreso && medio === "Dolares"} value={mov.importe} moneda="USD" type="ingreso" />
-                    <AmountCell active={esIngreso && medio === "Efectivo"} value={mov.importe} type="ingreso" />
-                    <AmountCell active={esIngreso && medio === "Cheques"} value={mov.importe} type="ingreso" />
-                    <AmountCell active={esIngreso && medio === "Transferencias"} value={mov.importe} type="ingreso" />
-                    <AmountCell active={esIngreso && medio === "Otros"} value={mov.importe} type="ingreso" />
+                    <td className="border-b border-r border-[#26aa9c]/10 bg-[#f3fbf9]/60 p-4 align-middle">
+                      {esIngreso ? <MovimientoImporteBox medio={medio} value={mov.importe} moneda={mov.moneda} cotizacion={mov.cotizacion} type="ingreso" /> : <EmptyAmount />}
+                    </td>
 
-                    <AmountCell active={!esIngreso && medio === "Dolares"} value={mov.importe} moneda="USD" type="egreso" />
-                    <AmountCell active={!esIngreso && medio === "Efectivo"} value={mov.importe} type="egreso" />
-                    <AmountCell active={!esIngreso && medio === "Cheques"} value={mov.importe} type="egreso" />
-                    <AmountCell active={!esIngreso && medio === "Transferencias"} value={mov.importe} type="egreso" />
-                    <AmountCell active={!esIngreso && medio === "Otros"} value={mov.importe} type="egreso" />
+                    <td className="border-b border-r border-red-100 bg-red-50/30 p-4 align-middle">
+                      {!esIngreso ? <MovimientoImporteBox medio={medio} value={mov.importe} moneda={mov.moneda} cotizacion={mov.cotizacion} type="egreso" /> : <EmptyAmount />}
+                    </td>
 
-                    <td className="border-b border-[#acbac4]/25 p-4 align-top">
-                      <span className="inline-flex rounded-xl bg-[#1a3263]/10 px-3 py-2 font-bold text-[#1a3263]">{mov.saldo}</span>
+                    <td className="border-b border-[#acbac4]/25 p-4 text-center align-middle">
+                      <span className="inline-flex rounded-xl bg-[#1a3263]/10 px-4 py-2 text-base font-bold text-[#1a3263] shadow-sm">{mov.saldo}</span>
                     </td>
                   </tr>
                 );
               })}
 
-              <tr className="bg-[#f8fafc]">
-                <td colSpan={4} className="sticky left-0 z-20 border-t-2 border-[#1a3263] bg-[#f8fafc] p-4 text-right font-bold text-[#1a3263]">Totales del libro</td>
+              <tr className="bg-white">
+                <td colSpan={3} className="border-t-2 border-[#357eb8] bg-[#f8fafc] p-4 text-right text-base font-bold text-[#1a3263]">
+                  Totales del libro
+                </td>
 
-                <TotalAmountCell value={totales.ingresos.Dolares} moneda="USD" type="ingreso" />
-                <TotalAmountCell value={totales.ingresos.Efectivo} type="ingreso" />
-                <TotalAmountCell value={totales.ingresos.Cheques} type="ingreso" />
-                <TotalAmountCell value={totales.ingresos.Transferencias} type="ingreso" />
-                <TotalAmountCell value={totales.ingresos.Otros} type="ingreso" />
+                <td className="border-t-2 border-[#357eb8] bg-[#effaf7] p-4">
+                  <TotalesLibroBox totales={totales.ingresos} total={totalIngresos} type="ingreso" />
+                </td>
 
-                <TotalAmountCell value={totales.egresos.Dolares} moneda="USD" type="egreso" />
-                <TotalAmountCell value={totales.egresos.Efectivo} type="egreso" />
-                <TotalAmountCell value={totales.egresos.Cheques} type="egreso" />
-                <TotalAmountCell value={totales.egresos.Transferencias} type="egreso" />
-                <TotalAmountCell value={totales.egresos.Otros} type="egreso" />
+                <td className="border-t-2 border-[#357eb8] bg-red-50 p-4">
+                  <TotalesLibroBox totales={totales.egresos} total={totalEgresos} type="egreso" />
+                </td>
 
-                <td className="border-t-2 border-[#1a3263] p-4"></td>
+                <td className="border-t-2 border-[#357eb8] p-4 text-center">
+                  <span className="inline-flex rounded-xl bg-[#1a3263]/10 px-4 py-2 text-lg font-bold text-[#1a3263] shadow-sm">{ultimoSaldo}</span>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -609,6 +617,70 @@ function LibroDiarioSistemaTable({ movimientos }) {
     </div>
   );
 }
+
+function MovimientoImporteBox({ medio, value, moneda = "ARS", cotizacion, type }) {
+  const esIngreso = type === "ingreso";
+  const label = moneda === "USD" ? "USD" : medio;
+  const amount = moneda === "USD" ? formatUSD(value) : formatCurrency(value);
+
+  return (
+    <div className={`mx-auto w-full max-w-[230px] overflow-hidden rounded-xl border bg-white shadow-sm ${esIngreso ? "border-[#26aa9c]/25" : "border-red-200"}`}>
+      <div className="flex items-center justify-between gap-3 px-4 py-3">
+        <span className="font-bold text-[#1f2937]">{label}:</span>
+        <span className={`font-extrabold ${esIngreso ? "text-[#1b7f75]" : "text-red-700"}`}>{amount}</span>
+      </div>
+
+      {moneda === "USD" && cotizacion && (
+        <div className="flex items-center justify-between border-t border-[#acbac4]/25 px-4 py-2 text-xs font-bold text-[#1a3263]">
+          <span>Cotización:</span>
+          <span>${cotizacion}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EmptyAmount() {
+  return <div className="text-center text-lg font-bold text-[#6b7a90]">-</div>;
+}
+
+function TotalesLibroBox({ totales, total, type }) {
+  const esIngreso = type === "ingreso";
+  const color = esIngreso ? "text-[#1b7f75]" : "text-red-700";
+  const label = esIngreso ? "TOTAL DEBE" : "TOTAL HABER";
+
+  const rows = [
+    ["Efectivo", totales.Efectivo],
+    ["Cheques", totales.Cheques],
+    ["Transfer.", totales.Transferencias],
+    ["Otros", totales.Otros],
+  ];
+
+  return (
+    <div className="grid gap-4 xl:grid-cols-[1fr_auto] xl:items-end">
+      <div className="space-y-1 text-sm">
+        {rows.filter(([, value]) => Number(value || 0) > 0).map(([name, value]) => (
+          <div key={name} className="flex justify-between gap-4 font-bold text-[#1a3263]">
+            <span>{name}:</span>
+            <span className={color}>{formatCurrency(value)}</span>
+          </div>
+        ))}
+        {Number(totales.Dolares || 0) > 0 && (
+          <div className="flex justify-between gap-4 font-bold text-[#1a3263]">
+            <span>USD:</span>
+            <span className={color}>{formatUSD(totales.Dolares)}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="text-right">
+        <p className={`text-xs font-extrabold uppercase tracking-wide ${color}`}>{label}</p>
+        <p className={`mt-1 text-xl font-extrabold ${color}`}>{formatCurrency(total)}</p>
+      </div>
+    </div>
+  );
+}
+
 
 function ModalCobro({ form, setForm, onClose, onSave }) {
   const [busquedaCliente, setBusquedaCliente] = useState("");
